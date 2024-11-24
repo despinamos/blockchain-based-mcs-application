@@ -47,7 +47,6 @@ contract Task_Initialization is UserInformation{
         //int[] task_data;
     }
 
-
     mapping(uint256 => taskCreation)public tasks;
 
     uint256[] public task_ids;
@@ -284,7 +283,7 @@ contract Task_Selection_Process is UserInformation, Task_Initialization{
     struct Data_by_Workers{
             uint256 unique_taskid;
             address[] assigned_addresses;
-            bytes32[] data;
+            string memory[] data;
     }
     mapping(uint256 => Data_by_Workers) public worker_data;
 
@@ -303,8 +302,8 @@ contract Task_Selection_Process is UserInformation, Task_Initialization{
 
         require(result == true, "You are not assigned to this task..");
         
-        bytes32 dataId = keccak256(abi.encodePacked(dataHash, msg.sender, block.timestamp));
-        worker_data[_unique_taskid].data[index] = dataId;
+        // bytes32 dataId = keccak256(abi.encodePacked(dataHash, msg.sender, block.timestamp));
+        worker_data[_unique_taskid].data[index] = dataHash;
 
         emit DataSubmitted(msg.sender, dataId, block.timestamp);
     }

@@ -108,7 +108,7 @@ async function calculateQuality() {
 
         const workerDataHashes = [];
         
-        var workerNumber = taskInfo.getWorkerCount();
+        var workerNumber = taskInit.getWorkerCount();
 
         for (let step = 0; step < workerNumber; step++) {
             workerDataHashes.push(taskSelect.getDataHashForTask(task_id, worker_id));
