@@ -282,12 +282,12 @@ contract Task_Selection_Process is UserInformation, Task_Initialization{
     struct Data_by_Workers{
             uint256 unique_taskid;
             address[] assigned_addresses;
-            string memory[] data;
+            string[] data;
     }
     mapping(uint256 => Data_by_Workers) public worker_data;
 
     //Event for data submission
-    event DataSubmitted(address indexed worker, bytes32 dataId, uint timestamp);
+    event DataSubmitted(address indexed worker, string dataHash);
 
     //Function for a Worker to submit data for a task he is assigned to
     //Using data_indexed to check if the corresponding slot matches the worker's index and overwrite it, if yes
@@ -304,16 +304,16 @@ contract Task_Selection_Process is UserInformation, Task_Initialization{
         // bytes32 dataId = keccak256(abi.encodePacked(dataHash, msg.sender, block.timestamp));
         worker_data[_unique_taskid].data[index] = dataHash;
 
-        emit DataSubmitted(msg.sender, dataId, block.timestamp);
+        emit DataSubmitted(msg.sender, dataHash);
     }
 
-    function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string memory){
-        bool result;
-        uint256 index;
-        (result, index) = isWorkerInTask(users[_worker_id].user_address, _unique_taskid);
+    // function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string memory){
+    //     bool result;
+    //     uint256 index;
+    //     (result, index) = isWorkerInTask(users[_worker_id].user_address, _unique_taskid);
 
-        require(result == true, "This worker is not assigned to this task..");
+    //     require(result == true, "This worker is not assigned to this task..");
 
-        //return worker_data[_unique_taskid].data[];
-    }
+    //     //return worker_data[_unique_taskid].data[];
+    // }
 }
