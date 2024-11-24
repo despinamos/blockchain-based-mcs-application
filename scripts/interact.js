@@ -33,9 +33,23 @@ async function deploy() {
 }
 
 async function userRegistration(userInfo) {
+    // calculates a cloaked version of the user's location
+    navigator.getCurrentPosition()(position => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    } )
+
+    const gridX = Math.floor(latitude / gridSize);
+    const gridY = Math.floor(longitude / gridSize);
+    const cloakedLatitude = gridX * gridSize + gridSize / 2;
+    const cloakedLongitude = gridY * gridSize + gridSize / 2;
+
     try {
         const userName = "Melina";
-        const userReg = await userInfo.setUser_Information(userName);
+        const userLocationLatitude = cloakedLatitude;
+        const userLocationLongitude = cloakedLongitude;
+        const userReg = await userInfo.setUser_Information(userName, userLocationLatitude, userLocationLongitude);
         await userReg.wait(); // Wait for transaction confirmation
         const userData = await userInfo.getUserInformation(0);
         console.log("User Name and Reputation: ", userData);
@@ -44,9 +58,9 @@ async function userRegistration(userInfo) {
     }
 }
 
-async function taskInformation(taskInit) {
+async function taskInformation(taskInit, taskName, taskInf, workerAmount, workerReward) {
     try {
-        const taskInfo = await taskInit.setTask_Information(("Kick ball"), ("Just kick the ball"), 10, 100);
+        const taskInfo = await taskInit.setTask_Information(taskName, taskInf, workerAmount, workerReward);
         const taskData = await taskInit.getTaskInformation(0);
         console.log("Task Name and Information: ", taskData);
     } catch (error) {
@@ -55,7 +69,17 @@ async function taskInformation(taskInit) {
 }
 
 async function workerSelection(taskSelect) {
+    const workerSelected = await taskSelect.Select_Worker();
+    console.log("Worker selection process...");
+}
 
+async function submitData(taskSelect, taskId, dataHash) {
+    try {
+        const submittedData = await taskSelect.Submitting_Data(taskId, dataHash);
+        console.log("Data submitted...");
+    } catch (error) {
+        console.error('Error submitting data:', error);
+    }
 }
 
 async function calculateQuality() {
@@ -108,13 +132,12 @@ async function calculateQuality() {
 
         const workerDataHashes = [];
         
-        var workerNumber = taskInfo.getWorkerCount();
+        var workerNumber = taskInit.getWorkerCount();
 
         for (let step = 0; step < workerNumber; step++) {
             workerDataHashes.push(taskSelect.getDataHashForTask(task_id, worker_id));
             console.log("Worker data hash sent...");
           }
-          
 
         // function getHashFromContract() {
         //     return contract.getHash()
@@ -140,7 +163,7 @@ async function calculateQuality() {
 async function main() {
     const { userInfo, taskInit } = await deploy();
     await userRegistration(userInfo);
-    await taskInformation(taskInit);
+    await taskInformation(taskInit, "Kick assistant!", "Just kick the assistant!", 10, 100);
 }
 
 main()
