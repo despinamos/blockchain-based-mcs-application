@@ -56,9 +56,9 @@ contract Task_Initialization is UserInformation{
     }
 
 
-    //Creating a fucntion that sets and stores Task Information.
+    //Creating a function that sets and stores Task Information.
     function setTask_Information(string  memory _task_name, string memory _task_information, int _number_of_workers_limit, uint _reward /*, int[] memory _data*/) public {
-        //Adding new task's nformation with _unique_taskid playing the role of index.
+        //Adding new task's Information with _unique_taskid playing the role of index.
         uint256 _unique_taskid = Set_Task_Unique_ID();
         uint256 get_UserID = userAddressToId[msg.sender];
 
@@ -169,7 +169,7 @@ contract Task_Selection_Process is UserInformation, Task_Initialization{
     //Temporary storage for the task ids that share the same requester
     uint256[] r_ids;
 
-    //If Requester, then only show the tasks they uploaded, along with the corrensponding status and data, if submitted
+    //If Requester, then only show the tasks they uploaded, along with the corresponding status and data, if submitted
     function Table_Task_Requester() public {
         //Make a for loop to bring all tasks that the requester has created
         //The ones that show first, are the tasks with submitted data from the worker's side.
@@ -186,7 +186,7 @@ contract Task_Selection_Process is UserInformation, Task_Initialization{
             delete r_ids;
         }
 
-    //function for everytime there is a match in the Table_Task_Worker function, return the assigned task by adding its task name and information
+    //function for every time there is a match in the Table_Task_Worker function, return the assigned task by adding its task name and information
     function Show_Task_Information (uint256 _unique_taskid) private view returns (string memory, string memory){
         return (tasks[_unique_taskid].task_name,tasks[_unique_taskid].task_information);
     }
@@ -308,13 +308,13 @@ contract Task_Selection_Process is UserInformation, Task_Initialization{
         emit DataSubmitted(msg.sender, dataId, block.timestamp);
     }
 
-    // function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string memory){
-    //     bool result;
-    //     uint256 index;
-    //     (result, index) = isWorkerInTask(users[_worker_id].user_address, _unique_taskid);
+    function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string memory){
+        bool result;
+        uint256 index;
+        (result, index) = isWorkerInTask(users[_worker_id].user_address, _unique_taskid);
 
-    //     require(result == true, "This worker is not assigned to this task..");
+        require(result == true, "This worker is not assigned to this task..");
 
-    //     //return worker_data[_unique_taskid].data[];
-    // }
+        //return worker_data[_unique_taskid].data[];
+    }
 }
