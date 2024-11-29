@@ -158,6 +158,10 @@ async function calculateQuality() {
         //         }
         //     });
         // });
+
+        var result = dataQualityFormula(data);
+
+        
 }
 
 async function main() {
