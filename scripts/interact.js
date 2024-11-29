@@ -84,7 +84,7 @@ async function submitData(taskSelect, taskId, dataHash) {
 
 async function calculateQuality() {
     /* > Call function to get data submitted by a worker for a task.
-    > This data is accessed from IPFS.
+    > This data is accessed from IPFS.  
     > The data is evaluated by the data quality formula. 
     > The result is saved on the blockchain.
     > According to that result, the worker's reputation is updated.

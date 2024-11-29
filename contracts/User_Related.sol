@@ -38,7 +38,7 @@ contract UserInformation {
             cancelled_tasks: 0,
             completed_tasks: 0,
             limit_tasks: 3,  // Default task limit for reputation 50
-            reputation: 30   // Default reputation
+            reputation: 50  // Default reputation
         });
 
         u_ids.push(user_ID);  // Store the new user ID

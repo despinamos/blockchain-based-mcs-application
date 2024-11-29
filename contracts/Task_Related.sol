@@ -97,7 +97,7 @@ contract Task_Initialization is UserInformation{
     
 }
 
-contract Task_Selection_Process is UserInformation, Task_Initialization{
+contract Task_Selection_Process is Reward_Penalty_System{
 
     //Creating a struct that has the unique_id as its key value in the mapping
     struct Task_has_Workers{
