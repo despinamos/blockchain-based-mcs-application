@@ -34,13 +34,13 @@ contract Task_Initialization is UserInformation{
     //Structured Data for Task's Creation
     struct taskCreation{
         address user_address;
-        string requester_name; 
-      //  uint256 requester_id;
+        string requester_name;
         string task_name;
         uint256 unique_taskid;
         string task_information;
         uint time;
-        uint zone;
+        //uint256 taskLatitude;
+        //uint256 taskLongitude;
         TaskStatus status;
         int number_of_workers_limit;
         uint reward;
@@ -68,7 +68,6 @@ contract Task_Initialization is UserInformation{
             unique_taskid: _unique_taskid,
             task_name: _task_name,
             task_information: _task_information,
-            zone: users[get_UserID].zone,
             time: 7 days,
             status: set_status(),
             number_of_workers_limit: _number_of_workers_limit,
@@ -137,7 +136,7 @@ contract Task_Selection_Process is Reward_Penalty_System{
                 //Will follow the concept of 'First Come First Served'
                 //In other words, the first who meet the requirements will be the first who
                 //will get the task.
-                if ((users[get_UserID].limit_tasks != 0) && (users[get_UserID].zone == tasks[visiting_taskid].zone)){
+                if ((users[get_UserID].limit_tasks != 0)){
                     users[get_UserID].limit_tasks -= 1;
                     tasks[visiting_taskid].number_of_workers_limit -= 1;
                     //Temporary storing the address of the workers
@@ -283,12 +282,12 @@ contract Task_Selection_Process is Reward_Penalty_System{
     struct Data_by_Workers{
             uint256 unique_taskid;
             address[] assigned_addresses;
-            string memory[] data;
+            string[] data;
     }
     mapping(uint256 => Data_by_Workers) public worker_data;
 
     //Event for data submission
-    event DataSubmitted(address indexed worker, bytes32 dataId, uint timestamp);
+    event DataSubmitted(address indexed worker, string dataHash);
 
     //Function for a Worker to submit data for a task he is assigned to
     //Using data_indexed to check if the corresponding slot matches the worker's index and overwrite it, if yes
@@ -305,16 +304,16 @@ contract Task_Selection_Process is Reward_Penalty_System{
         // bytes32 dataId = keccak256(abi.encodePacked(dataHash, msg.sender, block.timestamp));
         worker_data[_unique_taskid].data[index] = dataHash;
 
-        emit DataSubmitted(msg.sender, dataId, block.timestamp);
+        emit DataSubmitted(msg.sender, dataHash);
     }
 
-    function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string memory){
-        bool result;
-        uint256 index;
-        (result, index) = isWorkerInTask(users[_worker_id].user_address, _unique_taskid);
+    // function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string memory){
+    //     bool result;
+    //     uint256 index;
+    //     (result, index) = isWorkerInTask(users[_worker_id].user_address, _unique_taskid);
 
-        require(result == true, "This worker is not assigned to this task..");
+    //     require(result == true, "This worker is not assigned to this task..");
 
-        //return worker_data[_unique_taskid].data[];
-    }
+    //     //return worker_data[_unique_taskid].data[];
+    // }
 }
