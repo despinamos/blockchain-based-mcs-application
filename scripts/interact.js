@@ -162,9 +162,8 @@ async function calculateQuality() {
         var result = dataQualityFormula(data);
 
         try {
-            const taskInfo = await taskInit.setTask_Information(taskName, taskInf, workerAmount, workerReward);
-            const taskData = await taskInit.getTaskInformation(0);
-            console.log("Task Name and Information: ", taskData);
+            const result = await taskSelect.setWorkerQuality(taskId, workerId, result);
+            console.log("Submitted calculation result...");
         } catch (error) {
             console.error('Error submitting calculation result:', error);
         }
