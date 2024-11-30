@@ -34,28 +34,28 @@ async function deploy() {
 
 async function userRegistration(userInfo) {
     // calculates a cloaked version of the user's location
-    navigator.getCurrentPosition()(position => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-    } )
+    // navigator.getCurrentPosition()(position => {
+    //     const latitude = position.coords.latitude;
+    //     const longitude = position.coords.longitude;
+    //     console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    // } )
 
-    const gridX = Math.floor(latitude / gridSize);
-    const gridY = Math.floor(longitude / gridSize);
-    const cloakedLatitude = gridX * gridSize + gridSize / 2;
-    const cloakedLongitude = gridY * gridSize + gridSize / 2;
+    // const gridX = Math.floor(latitude / gridSize);
+    // const gridY = Math.floor(longitude / gridSize);
+    // const cloakedLatitude = gridX * gridSize + gridSize / 2;
+    // const cloakedLongitude = gridY * gridSize + gridSize / 2;
 
-    try {
-        const userName = "Melina";
-        const userLocationLatitude = cloakedLatitude;
-        const userLocationLongitude = cloakedLongitude;
-        const userReg = await userInfo.setUser_Information(userName, userLocationLatitude, userLocationLongitude);
-        await userReg.wait(); // Wait for transaction confirmation
-        const userData = await userInfo.getUserInformation(0);
-        console.log("User Name and Reputation: ", userData);
-    } catch (error) {
-        console.error('Error reading data:', error);
-    }
+    // try {
+    //     const userName = "Melina";
+    //     const userLocationLatitude = cloakedLatitude;
+    //     const userLocationLongitude = cloakedLongitude;
+    //     const userReg = await userInfo.setUser_Information(userName, userLocationLatitude, userLocationLongitude);
+    //     await userReg.wait(); // Wait for transaction confirmation
+    //     const userData = await userInfo.getUserInformation(0);
+    //     console.log("User Name and Reputation: ", userData);
+    // } catch (error) {
+    //     console.error('Error reading data:', error);
+    // }
 }
 
 async function taskInformation(taskInit, taskName, taskInf, workerAmount, workerReward) {
@@ -174,7 +174,7 @@ async function calculateQuality() {
 async function main() {
     const { userInfo, taskInit } = await deploy();
     await userRegistration(userInfo);
-    await taskInformation(taskInit, "Kick assistant!", "Just kick the assistant!", 10, 100);
+    await taskInformation(taskInit, "Kick ball!", "Just kick the ball!", 10, 100);
 }
 
 main()
