@@ -5,6 +5,7 @@
     "hardhat": "^2.22.15"
   },
   "dependencies": {
+    "express": "^4.21.2",
     "hardhat-project": "file:",
     "kubo-rpc-client": "^5.0.2"
   }
