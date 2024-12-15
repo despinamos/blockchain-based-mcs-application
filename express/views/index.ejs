@@ -13,39 +13,43 @@
   <h2>Chain ID: <span class="showChainId"></span></h2>
   <script src="javascripts/index.js"></script>
 
-  <button id="getLocation">Get Location</button>
-  <a id="locationResult" target="_blank"></a>
-
+  <button onclick="getLocation()">Button</button>
   <script>
-    const x = document.getElementById("Geo");
-
       function getLocation() {
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(showPosition);
+          navigator.geolocation.getCurrentPosition(printLocation);
         } else {
-          x.innerHTML = "Geolocation is not supported by this browser.";
+          console.log("Geolocation is not supported by this browser.");
         }
       }
 
-      function showPosition(position) {
-        x.innerHTML = "Latitude: " + position.coords.latitude +
-          "<br>Longitude: " + position.coords.longitude;
+      function printLocation(position) {
+        console.log("Latitude: " + position.coords.latitude +
+          "\nLongitude: " + position.coords.longitude);
+
+        // get More information using the Geoapify key
+        decode_latlong(position.coords.latitude, position.coords.longitude)
       }
 
-      /* freecodecamp */
+      async function decode_latlong(lat, long) {
+        // Replace YOUR_API_KEY with the api key you got from Geoapify
+        const apiUrl = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&format=json&apiKey=${"4e8a03f4dcc24306a83086b605c64112"}`;
 
-      const locationResult = document.querySelector('#locationResult');
-      document.querySelector('#getLocation').addEventListener('click', () => {
-        locationResult.textContent = 'Retrieving User Location...'
+        try {
+          const response = await fetch(apiUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch data. Status: ${response.status}`);
+          }
 
-        function success(position) {
-          const { coords } = position;
-          console.log('Latitude data: ' + coords.latitude);
-          console.log('Longitude data: ' + coords.longitude);
+          const data = await response.json();
+          console.log(data);
+          return results[0].Object.city;
+        } catch (error) {
+          console.error('An error occurred:', error);
         }
+      }
+    </script>
 
-        navigator.geolocation.getCurrentPosition(success);
-      });
-  </script>
+
 </body>
 </html>
