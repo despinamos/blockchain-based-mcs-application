@@ -14,6 +14,8 @@ ethereumButton.addEventListener('click', () => {
 });
 
 async function userRegistration(userInfo) {
+
+    const x = document.getElementById("Geo");
     // calculates a cloaked version of the user's location
     navigator.getCurrentPosition()(position => {
         const latitude = position.coords.latitude;
@@ -33,7 +35,9 @@ async function userRegistration(userInfo) {
         const userReg = await userInfo.setUser_Information(userName, userLocationLatitude, userLocationLongitude);
         await userReg.wait(); // Wait for transaction confirmation
         const userData = await userInfo.getUserInformation(0);
-        console.log("User Name and Reputation: ", userData);
+        x.innerHTML ="User Name and Reputation: " + userData +
+        "<br> Cloaked Latitude: " + cloakedLatitude +
+        "<br> Cloaked Longitude: " + cloakedLongitude;
     } catch (error) {
         console.error('Error reading data:', error);
     }

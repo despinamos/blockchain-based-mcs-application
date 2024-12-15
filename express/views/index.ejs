@@ -12,6 +12,40 @@
   <h2>Account: <span class="showAccount"></span></h2>
   <h2>Chain ID: <span class="showChainId"></span></h2>
   <script src="javascripts/index.js"></script>
-  <script src=""></script>
+
+  <button id="getLocation">Get Location</button>
+  <a id="locationResult" target="_blank"></a>
+
+  <script>
+    const x = document.getElementById("Geo");
+
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+          x.innerHTML = "Geolocation is not supported by this browser.";
+        }
+      }
+
+      function showPosition(position) {
+        x.innerHTML = "Latitude: " + position.coords.latitude +
+          "<br>Longitude: " + position.coords.longitude;
+      }
+
+      /* freecodecamp */
+
+      const locationResult = document.querySelector('#locationResult');
+      document.querySelector('#getLocation').addEventListener('click', () => {
+        locationResult.textContent = 'Retrieving User Location...'
+
+        function success(position) {
+          const { coords } = position;
+          console.log('Latitude data: ' + coords.latitude);
+          console.log('Longitude data: ' + coords.longitude);
+        }
+
+        navigator.geolocation.getCurrentPosition(success);
+      });
+  </script>
 </body>
 </html>
