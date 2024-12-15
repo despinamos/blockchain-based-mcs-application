@@ -13,6 +13,32 @@ ethereumButton.addEventListener('click', () => {
   getChainId();
 });
 
+async function userRegistration(userInfo) {
+    // calculates a cloaked version of the user's location
+    navigator.getCurrentPosition()(position => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    } )
+
+    const gridX = Math.floor(latitude / gridSize);
+    const gridY = Math.floor(longitude / gridSize);
+    const cloakedLatitude = gridX * gridSize + gridSize / 2;
+    const cloakedLongitude = gridY * gridSize + gridSize / 2;
+
+    try {
+        const userName = "Melina";
+        const userLocationLatitude = cloakedLatitude;
+        const userLocationLongitude = cloakedLongitude;
+        const userReg = await userInfo.setUser_Information(userName, userLocationLatitude, userLocationLongitude);
+        await userReg.wait(); // Wait for transaction confirmation
+        const userData = await userInfo.getUserInformation(0);
+        console.log("User Name and Reputation: ", userData);
+    } catch (error) {
+        console.error('Error reading data:', error);
+    }
+}
+
 // Get the account in the window object
 async function getAccount() {
   const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
