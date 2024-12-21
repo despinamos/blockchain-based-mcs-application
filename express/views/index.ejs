@@ -35,18 +35,16 @@
         // Replace YOUR_API_KEY with the api key you got from Geoapify
         const apiUrl = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&format=json&apiKey=${"4e8a03f4dcc24306a83086b605c64112"}`;
 
-        try {
-          const response = await fetch(apiUrl);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch data. Status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          console.log(data);
-          return results[0].Object.city;
-        } catch (error) {
-          console.error('An error occurred:', error);
-        }
+        fetch(apiUrl)
+          .then(response => response.json())
+          .then(data => {
+            // Extract the city name from the response
+            const cityName = data.features[0].properties.city;
+            console.log(`The city is: ${cityName}`);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
       }
     </script>
 
