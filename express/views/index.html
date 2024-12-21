@@ -4,47 +4,67 @@
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
 
-    <script type="module">
-      import { ethers } from "https://cdn.ethers.io/lib/ethers-5.2.esm.min.js";
-      // Your code here...
-  </script>
+    <!-- import Web3.js -->
+		<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   </head>
 <body>
   <h1>
     HomePage
   </h1>
-  <button class="enableEthereumButton">Connect to Metamask</button>
 
-  <script>
-      // Get the provider and signer from the browser window
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
+  <!-- placeholders -->
+  <div id="provider"></div>
+  <div id="chainId"></div>
+  <div id="latestBlock"></div>
+  <div id="connectedAccount"></div>
+  <div id="warn" style="color: red"></div>
 
-  // Initialise the document objects
-  const sendETH = document.querySelector('#sendETH');
-  const addressTo = document.querySelector('#addressTo');
-  const ETHAmount = document.querySelector('#ETHAmount');
+    <div>
+      <button id="requestAccounts">Connect to Metamask</button>
+    </div>
 
-  sendETH.addEventListener('submit', async(e) => {
-    e.preventDefault();
+  <script type="module">
 
-  //   // Get the form values
-  //   const addressToValue = addressTo.value;
-  //   const ETHAmountValue = ETHAmount.value;
-  //   // Calculate amount to transfer in wei
-  //   const weiAmountValue = ethers.utils.parseEther(ETHAmountValue) //parseInt(ETHAmountValue) * 10**18
+      if(window.ethereum) {
+      // use the injected Ethereum provider to initialize Web3.js
+      const web3 = new Web3(window.ethereum);
 
-  //   // Form the transaction request for sending ETH
-  //   const transactionRequest = {
-  //     to: addressToValue.toString(),
-  //     value: weiAmountValue.toString()
-  //   }
+      // check if Ethereum provider comes from MetaMask
+      if (window.ethereum.isMetaMask) {
+        document.getElementById('provider').innerText =
+          'Connected to Ethereum with MetaMask.';
+      } else {
+        document.getElementById('provider').innerText =
+          'Non-MetaMask Ethereum provider detected.';
+      }
 
-  //   // Send the transaction and log the receipt
-  //   const receipt = await signer.sendTransaction(transactionRequest);
-  //   console.log(receipt);
+      // click event for "Request MetaMask Accounts" button
+				document.getElementById('requestAccounts').addEventListener('click', async () => {
+					// request accounts from MetaMask
+					await window.ethereum.request({ method: 'eth_requestAccounts' });
+					document.getElementById('requestAccounts').remove();
 
-    })
+					// get list of accounts
+					const accounts = await web3.eth.getAccounts();
+					// get the first account and populate placeholder
+					document.getElementById(
+						'connectedAccount',
+					).innerText = `Account: ${accounts[0]}`;
+
+					// enable signing input
+					const messageToSign = document.getElementById('messageToSign');
+					const sign = document.getElementById('signMessage');
+					messageToSign.disabled = false;
+					sign.disabled = false;
+					});
+
+			} else {
+				// no Ethereum provider - instruct user to install MetaMask
+				document.getElementById('warn').innerHTML =
+					"Please <a href='https://metamask.io/download/'>install MetaMask</a>.";
+				document.getElementById('requestAccounts').disabled = true;
+			}
+
   </script>
 
   <h2>Account: <span class="showAccount"></span></h2>

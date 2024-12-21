@@ -12,6 +12,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 //Importing the appropriate parent contracts from the corresponding files in order: UserInformation
 import "./User_Related.sol";
+import "./Reward_Penalty_System.sol";
 
 
 //A contract that creates a task with key values the task id and the requester's address, as long as the account is a requester's
