@@ -33,7 +33,7 @@
 
       async function decode_latlong(lat, long) {
         // Replace YOUR_API_KEY with the api key you got from Geoapify
-        const apiUrl = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&format=json&apiKey=${"4e8a03f4dcc24306a83086b605c64112"}`;
+        const apiUrl = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&apiKey=${"4e8a03f4dcc24306a83086b605c64112"}`;
 
         fetch(apiUrl)
           .then(response => response.json())
