@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+
+    <script type="module">
+      import { ethers } from "https://cdn.ethers.io/lib/ethers-5.2.esm.min.js";
+      // Your code here...
+  </script>
+  </head>
+<body>
+  <h1>
+    HomePage
+  </h1>
+  <button class="enableEthereumButton">Connect to Metamask</button>
+
+  <script>
+      // Get the provider and signer from the browser window
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+
+  // Initialise the document objects
+  const sendETH = document.querySelector('#sendETH');
+  const addressTo = document.querySelector('#addressTo');
+  const ETHAmount = document.querySelector('#ETHAmount');
+
+  sendETH.addEventListener('submit', async(e) => {
+    e.preventDefault();
+
+  //   // Get the form values
+  //   const addressToValue = addressTo.value;
+  //   const ETHAmountValue = ETHAmount.value;
+  //   // Calculate amount to transfer in wei
+  //   const weiAmountValue = ethers.utils.parseEther(ETHAmountValue) //parseInt(ETHAmountValue) * 10**18
+
+  //   // Form the transaction request for sending ETH
+  //   const transactionRequest = {
+  //     to: addressToValue.toString(),
+  //     value: weiAmountValue.toString()
+  //   }
+
+  //   // Send the transaction and log the receipt
+  //   const receipt = await signer.sendTransaction(transactionRequest);
+  //   console.log(receipt);
+
+    })
+  </script>
+
+  <h2>Account: <span class="showAccount"></span></h2>
+  <h2>Chain ID: <span class="showChainId"></span></h2>
+  <!-- <script src="../../express/routes/index.js"></script> -->
+
+
+  <button onclick="getLocation()">Button</button>
+  <script>
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(printLocation);
+        } else {
+          console.log("Geolocation is not supported by this browser.");
+        }
+      }
+
+      function printLocation(position) {
+        console.log("Latitude: " + position.coords.latitude +
+          "\nLongitude: " + position.coords.longitude);
+
+        // get More information using the Geoapify key
+        decode_latlong(position.coords.latitude, position.coords.longitude)
+      }
+
+      async function decode_latlong(lat, long) {
+        // Replace YOUR_API_KEY with the api key you got from Geoapify
+        const apiUrl = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&apiKey=${"4e8a03f4dcc24306a83086b605c64112"}`;
+
+        fetch(apiUrl)
+          .then(response => response.json())
+          .then(data => {
+            // Extract the city name from the response
+            const cityName = data.features[0].properties.city;
+            console.log(`The city is: ${cityName}`);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+    </script>
+
+
+</body>
+</html>
