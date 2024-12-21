@@ -1,5 +1,3 @@
-const { ethers } = require("ethers");
-
 // Get the provider and signer from the browser window
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
