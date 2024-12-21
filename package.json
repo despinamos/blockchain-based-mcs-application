@@ -7,6 +7,7 @@
   "dependencies": {
     "express": "^4.21.2",
     "hardhat-project": "file:",
-    "kubo-rpc-client": "^5.0.2"
+    "kubo-rpc-client": "^5.0.2",
+    "touch": "^3.1.1"
   }
 }

@@ -12,5 +12,44 @@
   <h2>Account: <span class="showAccount"></span></h2>
   <h2>Chain ID: <span class="showChainId"></span></h2>
   <script src="javascripts/index.js"></script>
+
+  <button onclick="getLocation()">Button</button>
+  <script>
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(printLocation);
+        } else {
+          console.log("Geolocation is not supported by this browser.");
+        }
+      }
+
+      function printLocation(position) {
+        console.log("Latitude: " + position.coords.latitude +
+          "\nLongitude: " + position.coords.longitude);
+
+        // get More information using the Geoapify key
+        decode_latlong(position.coords.latitude, position.coords.longitude)
+      }
+
+      async function decode_latlong(lat, long) {
+        // Replace YOUR_API_KEY with the api key you got from Geoapify
+        const apiUrl = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&format=json&apiKey=${"4e8a03f4dcc24306a83086b605c64112"}`;
+
+        try {
+          const response = await fetch(apiUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch data. Status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log(data);
+          return results[0].Object.city;
+        } catch (error) {
+          console.error('An error occurred:', error);
+        }
+      }
+    </script>
+
+
 </body>
 </html>
