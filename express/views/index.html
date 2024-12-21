@@ -14,8 +14,6 @@
 
   <!-- placeholders -->
   <div id="provider"></div>
-  <div id="chainId"></div>
-  <div id="latestBlock"></div>
   <div id="connectedAccount"></div>
   <div id="warn" style="color: red"></div>
 
@@ -50,12 +48,6 @@
 					document.getElementById(
 						'connectedAccount',
 					).innerText = `Account: ${accounts[0]}`;
-
-					// enable signing input
-					const messageToSign = document.getElementById('messageToSign');
-					const sign = document.getElementById('signMessage');
-					messageToSign.disabled = false;
-					sign.disabled = false;
 					});
 
 			} else {
