@@ -7,8 +7,6 @@ contract UserInformation {
         uint256 u_id;
         string full_name;
         address user_address;
-        uint256 latitude;
-        uint256 longitude;
         uint cancelled_tasks;
         uint completed_tasks;
         uint limit_tasks;
@@ -25,7 +23,7 @@ contract UserInformation {
         return u_ids.length;
     }
 
-    function setUser_Information(string memory _full_name, uint256 _latitude, uint256 _longitude) public {
+    function setUser_Information(string memory _full_name) public {
         uint256 user_ID = Set_User_ID();
 
         // Set user's information
@@ -33,8 +31,8 @@ contract UserInformation {
             u_id: user_ID,
             user_address: msg.sender,
             full_name: _full_name,
-            latitude: _latitude,
-            longitude: _longitude, 
+            // latitude: _latitude,
+            // longitude: _longitude, 
             cancelled_tasks: 0,
             completed_tasks: 0,
             limit_tasks: 3,  // Default task limit for reputation 50

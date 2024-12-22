@@ -55,7 +55,7 @@ document.getElementById("dataForm").addEventListener("submit", async (event) => 
 
     // Interact with the contract
     
-    contract.methods.setUser(name).send({
+    userRegistration.methods.setUser_Information(name).send({
       from: accounts[0],
     });
 
