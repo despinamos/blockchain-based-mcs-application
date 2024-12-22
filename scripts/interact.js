@@ -1,5 +1,11 @@
 const { ethers } = require("hardhat"); // Use for runtime
 
+// Deploy UserInformation
+    const userInfo = new web3.eth.Contract(userAbi);
+    const userInfoInstance = await userInfo.deploy({ data: userBytecode }).send({ from: deployer, gas: 5000000 });
+    console.log("User_Information deployed at: ", userInfoInstance.options.address);
+
+
 async function deploy() {
     // contract deployment
     const [deployer] = await ethers.getSigners();
@@ -18,7 +24,7 @@ async function deploy() {
     console.log("Task_Initialization deployed at: ", await taskInit.getAddress());
 
     // Deploy Task_Selection_Process
-    const TaskSelectionProcess = await ethers.getContractFactory('Task_Selection_Process');
+    const TaskSelectionProcess = await ethers.getContractFactory('Task_Selection');
     const taskSelect = await TaskSelectionProcess.deploy();
     await taskSelect.waitForDeployment();
     console.log("Task_Selection_Process deployed at: ", await taskSelect.getAddress());
