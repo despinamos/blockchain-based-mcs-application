@@ -10,9 +10,9 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 //We import the necessary data from the parent contracts which currently are in order : UserInformation, Task_Initialization and Task_Selection_Process
-import './Task_Related.sol';
+import './Task_Initialization.sol';
 
-contract Reward_Penalty_System is UserInformation, Task_Initialization{
+contract Reward_Penalty_System is Task_Initialization{
 
 
     function Reward_Process() public{
