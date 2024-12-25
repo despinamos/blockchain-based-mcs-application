@@ -1,12 +1,18 @@
-(async () => {
 // Initialize Web3
-const web3 = new Web3(web3.givenProvider || "http://localhost:8545");
+import userArtifact from '../artifacts/contracts/User_Related.sol/UserInformation.json';
+import taskInitArtifact from '../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json';
+import taskSelectArtifact from '../artifacts/contracts/Task_Selection.sol/Task_Selection.json';
+import rewardSysArtifact from '../artifacts/contracts/Reward_Penalty_System.sol/Reward_Penalty_System.json';
 
-const { abi : userAbi, bytecode : userBytecode } = require("../artifacts/contracts/User_Related.sol/UserInformation.json"); // ABI and Bytecode for UserInformation
-const { abi : taskInitAbi, bytecode : taskInitBytecode } = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json"); // ABI and Bytecode for TaskInitialization
-const { abi : taskSelectAbi, bytecode : taskSelectBytecode } = require("../artifacts/contracts/Task_Selection.sol/Task_Selection.json"); // ABI and Bytecode for TaskSelectionProcess
-const { abi : rewardSysAbi, bytecode : rewardSysBytecode } = require("../artifacts/contracts/Reward_Penalty_System.sol/Reward_Penalty_System.json"); // ABI and Bytecode for RewardPenaltySystem
+const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
 
+const { abi: userAbi, bytecode: userBytecode } = userArtifact; // ABI and Bytecode for UserInformation
+const { abi: taskInitAbi, bytecode: taskInitBytecode } = taskInitArtifact; // ABI and Bytecode for TaskInitialization
+const { abi: taskSelectAbi, bytecode: taskSelectBytecode } = taskSelectArtifact; // ABI and Bytecode for TaskSelectionProcess
+const { abi: rewardSysAbi, bytecode: rewardSysBytecode } = rewardSysArtifact; // ABI and Bytecode for RewardPenaltySystem
+
+
+async function deployContracts() {
 
   const accounts = await web3.eth.getAccounts();
   const deployer = accounts[0];
@@ -65,4 +71,6 @@ document.getElementById("dataForm").addEventListener("submit", async (event) => 
     alert("An error occurred while submitting data.");
   }
 });
-});
+}
+
+deployContracts().catch(console.error);

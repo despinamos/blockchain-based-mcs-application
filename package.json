@@ -8,6 +8,7 @@
     "ethers": "^6.13.4",
     "express": "^4.21.2",
     "hardhat-project": "file:",
+    "helia": "^5.1.1",
     "kubo-rpc-client": "^5.0.2",
     "touch": "^3.1.1",
     "web3": "^4.16.0"
