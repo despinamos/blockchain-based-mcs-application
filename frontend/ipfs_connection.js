@@ -1,17 +1,51 @@
-const { createHelia } = require('helia');
-const { unixfs } = require('@helia/unixfs');
+/* eslint-disable no-console */
+import { createHeliaHTTP } from '@helia/http'
+import { unixfs } from '@helia/unixfs'
 
-async function uploadFile(file) {
-    const helia = await createHelia()
-    console.log('IPFS node started')
-    
-    try {
-        const fs = unixfs(helia)
-        const cid = await fs.addBytes(file)
-        console.log('File CID:', cid)
-    }catch(error) {
-        console.error('Something went wrong with IPFS upload: ', error)
-    }
+(async () => {
+// const createHeliaHTTP = require('@helia/http')
+// const unixfs = require('@helia/unixfs')
+
+// create a Helia node
+const helia = await createHeliaHTTP()
+
+// create a filesystem on top of Helia, in this case it's UnixFS
+const fs = unixfs(helia)
+
+// add a file and wrap in a directory
+const readmeCid = await fs.addFile({
+  path: './app.js'
+}, {
+  wrapWithDirectory: true
+})
+
+console.log('Added README.md file:', readmeCid.toString())
+
+// we will use this TextEncoder to turn strings into Uint8Arrays
+const encoder = new TextEncoder()
+
+// add the bytes to your node and receive a unique content identifier
+const cid = await fs.addBytes(encoder.encode('Hello World 101'), {
+  onProgress: (evt) => {
+    console.info('add event', evt.type, evt.detail)
+  }
+})
+
+console.log('Added file:', cid.toString())
+
+// this decoder will turn Uint8Arrays into strings
+const decoder = new TextDecoder()
+let text = ''
+
+for await (const chunk of fs.cat(cid, {
+  onProgress: (evt) => {
+    console.info('cat event', evt.type, evt.detail)
+  }
+})) {
+  text += decoder.decode(chunk, {
+    stream: true
+  })
 }
 
-uploadFile(file)
+console.log('Added file contents:', text)
+})()
