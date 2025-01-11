@@ -214,9 +214,10 @@ async function calculateQuality() {
 }
 
 async function main() {
-    const { userInfo, taskInit } = await deploy();
-    await userRegistration(userInfo);
-    await taskInformation(taskInit, "Kick ball!", "Just kick the ball!", 10, 100);
+    // const { userInfo, taskInit } = await deploy();
+    // await userRegistration(userInfo);
+    // await taskInformation(taskInit, "Kick ball!", "Just kick the ball!", 10, 100);
+    await initIpfs();
 }
 
 main()
