@@ -1,4 +1,5 @@
-const { ethers } = require("hardhat");
+import pkg from 'hardhat';
+const { ethers } = pkg;
 import { createHeliaHTTP } from '@helia/http'
 import { unixfs } from '@helia/unixfs'
 
