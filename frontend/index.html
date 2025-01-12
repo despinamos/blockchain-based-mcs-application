@@ -1,131 +1,109 @@
-<!-- this is simple html without react-->
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Web3.js MetaMask Tutorial</title>
-		<!-- import Web3.js -->
-		<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-	</head>
-	<body>
-		<!-- placeholders -->
-		<div id="provider"></div>
-		<div id="chainId"></div>
-		<div id="latestBlock"></div>
-		<div id="connectedAccount"></div>
-		<div id="warn" style="color: red"></div>
+<html>
 
-		<div>
-			<button id="requestAccounts">Request MetaMask Accounts</button>
-		</div>
+<head>
+	<title>
+		<%= title %>
+	</title>
+	<link rel='stylesheet' href='/stylesheets/style.css' />
 
-		<div>
-			<input id="messageToSign" placeholder="Message to Sign" disabled />
-			<button id="signMessage" disabled>Sign Message</button>
-			<div id="signingResult"></div>
-		</div>
+	<!-- import Web3.js -->
+	<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
 
-		<div>
-			<input id="originalMessage" placeholder="Original Message" disabled />
-			<input id="signedMessage" placeholder="Signed Message" disabled />
-			<button id="recoverAccount" disabled>Recover Account</button>
-			<div id="signingAccount"></div>
-		</div>
-		<script type="module">
-			// ensure that there is an injected the Ethereum provider
-			if (window.ethereum) {
-				// use the injected Ethereum provider to initialize Web3.js
-				const web3 = new Web3(window.ethereum);
+<body>
+	<h1>
+		HomePage
+	</h1>
 
-				// check if Ethereum provider comes from MetaMask
-				if (window.ethereum.isMetaMask) {
-					document.getElementById('provider').innerText =
-						'Connected to Ethereum with MetaMask.';
-				} else {
-					document.getElementById('provider').innerText =
-						'Non-MetaMask Ethereum provider detected.';
-				}
+	<!-- placeholders -->
+	<div id="provider"></div>
+	<div id="connectedAccount"></div>
+	<div id="warn" style="color: red"></div>
 
-				// get chain ID and populate placeholder
-				document.getElementById(
-					'chainId',
-				).innerText = `Chain ID: ${await web3.eth.getChainId()}`;
-				// get latest block and populate placeholder
-				document.getElementById(
-					'latestBlock',
-				).innerText = `Latest Block: ${await web3.eth.getBlockNumber()}`;
+	<div>
+		<button id="requestAccounts">Connect to Metamask</button>
+	</div>
 
-				// subscribe to new blocks and update UI when a new block is created
-				const blockSubscription = await web3.eth.subscribe('newBlockHeaders');
-				blockSubscription.on('data', block => {
-					document.getElementById(
-						'latestBlock',
-					).innerText = `Latest Block: ${block.number}`;
-				});
+	<script type="module">
 
-				// click event for "Request MetaMask Accounts" button
-				document.getElementById('requestAccounts').addEventListener('click', async () => {
-					// request accounts from MetaMask
-					await window.ethereum.request({ method: 'eth_requestAccounts' });
-					document.getElementById('requestAccounts').remove();
+		if (window.ethereum) {
+			// use the injected Ethereum provider to initialize Web3.js
+			const web3 = new Web3(window.ethereum);
 
-					// get list of accounts
-					const accounts = await web3.eth.getAccounts();
-					// get the first account and populate placeholder
-					document.getElementById(
-						'connectedAccount',
-					).innerText = `Account: ${accounts[0]}`;
-
-					// enable signing input
-					const messageToSign = document.getElementById('messageToSign');
-					const sign = document.getElementById('signMessage');
-					messageToSign.disabled = false;
-					sign.disabled = false;
-
-					// click event for "Sign Message" button
-					sign.addEventListener('click', async () => {
-						// sign message with first MetaMask account
-						const signature = await web3.eth.personal.sign(
-							messageToSign.value,
-							accounts[0],
-							'',
-						);
-
-						// update placeholder with signed message
-						document.getElementById(
-							'signingResult',
-						).innerText = `Signed Message: ${signature}`;
-					});
-
-					// enable signature verification input
-					const originalMessage = document.getElementById('originalMessage');
-					const signedMessaged = document.getElementById('signedMessage');
-					const recoverAccount = document.getElementById('recoverAccount');
-					originalMessage.disabled = false;
-					signedMessaged.disabled = false;
-					recoverAccount.disabled = false;
-
-					// click event for "Recover Account" button
-					recoverAccount.addEventListener('click', async () => {
-						// recover account from signature
-						const account = await web3.eth.personal.ecRecover(
-							originalMessage.value,
-							signedMessaged.value,
-						);
-
-						// update placeholder with recovered signature account
-						document.getElementById(
-							'signingAccount',
-						).innerText = `Signing Account: ${account}`;
-					});
-				});
+			// check if Ethereum provider comes from MetaMask
+			if (window.ethereum.isMetaMask) {
+				document.getElementById('provider').innerText =
+					'Connected to Ethereum with MetaMask.';
 			} else {
-				// no Ethereum provider - instruct user to install MetaMask
-				document.getElementById('warn').innerHTML =
-					"Please <a href='https://metamask.io/download/'>install MetaMask</a>.";
-				document.getElementById('requestAccounts').disabled = true;
+				document.getElementById('provider').innerText =
+					'Non-MetaMask Ethereum provider detected.';
 			}
-		</script>
-	</body>
+
+			// click event for "Request MetaMask Accounts" button
+			document.getElementById('requestAccounts').addEventListener('click', async () => {
+				// request accounts from MetaMask
+				await window.ethereum.request({ method: 'eth_requestAccounts' });
+				document.getElementById('requestAccounts').remove();
+
+				// get list of accounts
+				const accounts = await web3.eth.getAccounts();
+				// get the first account and populate placeholder
+				document.getElementById(
+					'connectedAccount',
+				).innerText = `Account: ${accounts[0]}`;
+			});
+
+		} else {
+			// no Ethereum provider - instruct user to install MetaMask
+			document.getElementById('warn').innerHTML =
+				"Please <a href='https://metamask.io/download/'>install MetaMask</a>.";
+			document.getElementById('requestAccounts').disabled = true;
+		}
+
+	</script>
+
+	<!-- <h2>Account: <span class="showAccount"></span></h2>
+  <h2>Chain ID: <span class="showChainId"></span></h2> -->
+	<!-- <script src="../../express/routes/index.js"></script> -->
+
+
+	<button onclick="getLocation()">Button</button>
+	<script>
+		function getLocation() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(printLocation);
+			} else {
+				console.log("Geolocation is not supported by this browser.");
+			}
+		}
+
+		function printLocation(position) {
+			console.log("Latitude: " + position.coords.latitude +
+				"\nLongitude: " + position.coords.longitude);
+
+			// get More information using the Geoapify key
+			decode_latlong(position.coords.latitude, position.coords.longitude)
+		}
+
+		async function decode_latlong(lat, long) {
+			// Replace YOUR_API_KEY with the api key you got from Geoapify
+			const apiUrl = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&apiKey=${"4e8a03f4dcc24306a83086b605c64112"}`;
+
+			fetch(apiUrl)
+				.then(response => response.json())
+				.then(data => {
+					// Extract the city name from the response
+					const cityName = data.features[0].properties.city;
+					console.log(`The city is: ${cityName}`);
+				})
+				.catch(error => {
+					console.error('Error:', error);
+				});
+		}
+	</script>
+
+
+</body>
+
 </html>
