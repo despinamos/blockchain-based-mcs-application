@@ -35,7 +35,6 @@ async function setCidToContract(taskId, hash) {
     setIpfsHash(hash);
 }
 
-
 async function deploy() {
     // contract deployment
     const [deployer] = await ethers.getSigners();
@@ -64,17 +63,14 @@ async function deploy() {
     const rewardSys = await RewardPenaltySystem.deploy();
     await rewardSys.waitForDeployment();
     console.log("Reward_Penalty_System deployed at: ", await rewardSys.getAddress());
-
+    
     return { userInfo, taskInit, taskSelect, rewardSys };
 }
 
 async function userFormSubmission(userInfo) {
     // Form Submission
-    document.getElementById("dataForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
     
-        const name = document.getElementById("name").value;
-        
+        const name = document.getElementById("username").value;
     
         if (!name) {
         alert("Please fill in all fields");
@@ -98,7 +94,6 @@ async function userFormSubmission(userInfo) {
         console.error("Error:", error);
         alert("An error occurred while submitting data.");
         }
-    });
 }
 
 async function userRegistration(userInfo) {
@@ -236,10 +231,13 @@ async function calculateQuality() {
 }
 
 async function main() {
-    // const { userInfo, taskInit } = await deploy();
+    const { userInfo, taskInit } = await deploy();
     // await userRegistration(userInfo);
     // await taskInformation(taskInit, "Kick ball!", "Just kick the ball!", 10, 100);
-    await initIpfs();
+    document.getElementById("dataForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        await userFormSubmission(userInfo);
+    });
 }
 
 main()

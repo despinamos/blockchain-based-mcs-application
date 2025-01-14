@@ -3,12 +3,13 @@
 
 <head>
 	<title>
-		<%= title %>
+		WTF! - Web3, Token, and Frontend
 	</title>
-	<link rel='stylesheet' href='/stylesheets/style.css' />
+	<!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
 
 	<!-- import Web3.js -->
 	<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+	<script src="./location_deploy.js"></script>
 </head>
 
 <body>
@@ -24,9 +25,17 @@
 	<div>
 		<button id="requestAccounts">Connect to Metamask</button>
 	</div>
+	<form id="dataForm">
+		<div>
+			<fieldset style="font-family: 'Courier New', Courier, monospace; font-size:smaller; font-weight:bold;">
+				<legend>Name</legend>
+				<input type="text" name="username" id="username" required>
+				<button type="submit">Submit</button>
+			</fieldset>
+		</div>
+	</form>
 
 	<script type="module">
-
 		if (window.ethereum) {
 			// use the injected Ethereum provider to initialize Web3.js
 			const web3 = new Web3(window.ethereum);
@@ -69,41 +78,11 @@
 
 
 	<button onclick="getLocation()">Button</button>
-	<script>
-		function getLocation() {
-			if (navigator.geolocation) {
-				navigator.geolocation.getCurrentPosition(printLocation);
-			} else {
-				console.log("Geolocation is not supported by this browser.");
-			}
-		}
-
-		function printLocation(position) {
-			console.log("Latitude: " + position.coords.latitude +
-				"\nLongitude: " + position.coords.longitude);
-
-			// get More information using the Geoapify key
-			decode_latlong(position.coords.latitude, position.coords.longitude)
-		}
-
-		async function decode_latlong(lat, long) {
-			// Replace YOUR_API_KEY with the api key you got from Geoapify
-			const apiUrl = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&apiKey=${"4e8a03f4dcc24306a83086b605c64112"}`;
-
-			fetch(apiUrl)
-				.then(response => response.json())
-				.then(data => {
-					// Extract the city name from the response
-					const cityName = data.features[0].properties.city;
-					console.log(`The city is: ${cityName}`);
-				})
-				.catch(error => {
-					console.error('Error:', error);
-				});
-		}
-	</script>
 
 
-</body>
+	<!-- <script type="module" src="./interact.mjs"></script> -->
+	<script src="./interact.mjs"></script>
+
+</body onload="deploy()">
 
 </html>
