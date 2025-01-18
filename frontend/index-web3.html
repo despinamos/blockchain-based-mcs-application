@@ -6,6 +6,7 @@
 
 	<!-- import Web3.js and Ethers.js -->
 	<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
  
 </head>
 
@@ -63,13 +64,14 @@
 
 	<button onclick="getLocation()">Give Location (city)</button>
 
+	<script src="./bundle.js" defer></script>
+
 	<form id="dataForm">
 		<label for="username">Enter Full Name to Register:</label>
 		<input type="text" id="username">
-		<button type="submit">Submit form</button>
+		<button type="submit" onclick="">Submit form</button>
 	</form>
 
-	<script src="../bundle.js"></script>
 
 	<script>
 
@@ -120,6 +122,8 @@
 
         console.log("username: ", name)
         
+				const userContract = new web3.eth.Contract(userAbi, userContractAddress);
+				userContract.handleRevert = true;
     
         if (!name) {
         alert("Please fill in all fields");
