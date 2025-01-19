@@ -25,7 +25,7 @@
 	</div>
 
 	<script type="module">
-
+		
 		if (window.ethereum) {
 			// use the injected Ethereum provider to initialize Web3.js
 			const web3 = new Web3(window.ethereum);
@@ -64,17 +64,15 @@
 
 	<button onclick="getLocation()">Give Location (city)</button>
 
-	<script src="./bundle.js" defer></script>
-
 	<form id="dataForm">
 		<label for="username">Enter Full Name to Register:</label>
 		<input type="text" id="username">
-		<button type="submit" onclick="">Submit form</button>
+		<button type="submit" onclick="interact()">Submit form</button>
 	</form>
 
 
 	<script>
-
+	// import "./bundle.js"
 		// const {userContract} = require("contractObjectsWeb3.cjs")
 
     var cityNameGlobal = " "
@@ -151,6 +149,8 @@
         }
 			})
 	</script>
+
+<script src="./bundle.js" defer></script>
 
 </body>
 

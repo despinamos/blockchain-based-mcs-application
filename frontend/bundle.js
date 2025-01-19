@@ -2089,7 +2089,7 @@ const taskInitContract = new web3.eth.Contract(taskInitAbi, taskInitAbi);
 userContract.handleRevert = true;
 taskInitContract.handleRevert = true;
 
-async function interact() {
+function interact() {
 	// const accounts = await web3.eth.getAccounts();
 	// const defaultAccount = accounts[0];
 	console.log("I see you")
