@@ -6,7 +6,7 @@
 
 	<!-- import Web3.js and Ethers.js -->
 	<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-
+	<script src="./demo.js"></script>
  
 </head>
 
@@ -21,7 +21,7 @@
 	<div id="warn" style="color: red"></div>
 
 	<div>
-		<button id="requestAccounts">Connect to Metamask</button>
+		<button id="requestAccounts" onclick="Hello()">Connect to Metamask</button>
 	</div>
 
 	<script type="module">
@@ -111,7 +111,7 @@
 		}
 
 		// Form Submission
-    document.getElementById("dataForm").addEventListener("submit", async (event) => {
+    	document.getElementById("dataForm").addEventListener("submit", async (event) => {
         event.preventDefault();
 
         console.log("City name after submit: ", cityNameGlobal)
