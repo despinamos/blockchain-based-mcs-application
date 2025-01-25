@@ -4,9 +4,10 @@
 <head>
 	<title> Frontend </title>
 
-	<!-- import Web3.js and Ethers.js -->
+	<!-- import Web3.js -->
 	<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-	<script src="./demo.js"></script>
+	<script src="./bundle.js" defer></script>
+
  
 </head>
 
@@ -21,13 +22,13 @@
 	<div id="warn" style="color: red"></div>
 
 	<div>
-		<button id="requestAccounts" onclick="Hello()">Connect to Metamask</button>
+		<button id="requestAccounts">Connect to Metamask</button>
 	</div>
 
 	<form id="dataForm">
 		<label for="username">Enter Full Name to Register:</label>
 		<input type="text" id="username">
-		<button type="submit">Submit form</button>
+		<button type="submit" onclick="interact()" defer>Submit form</button>
 	</form>
 
 	<script>
@@ -40,7 +41,7 @@
 					console.log('MetaMask is installed!');
 				}
 			} catch (error) {
-				console.error('Baka!' + error);
+				console.error('Metamask is NOT installed...' + error);
 			}
 			
 
@@ -76,74 +77,16 @@
 
 	</script>
 
-	<button onclick="getLocation()">Give Location (city)</button>
+	<button onclick="getLocation()" defer>Give Location (city)</button>
 
-
-	<script>
-	// import "./bundle.js"
-		// const {userContract} = require("contractObjectsWeb3.cjs")
-
-    var cityNameGlobal = " "
-
-		function getLocation() {
-			if (navigator.geolocation) {
-				navigator.geolocation.getCurrentPosition(printLocation);
-			} else {
-				console.log("Geolocation is not supported by this browser.");
-			}
-		}
-
-		async function decode_latlong(lat, long) {
-			// Replace YOUR_API_KEY with the api key you got from Geoapify
-			const apiUrl = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&apiKey=${"4e8a03f4dcc24306a83086b605c64112"}`;
-
-			fetch(apiUrl)
-				.then(response => response.json())
-				.then(data => {
-					// Extract the city name from the response
-					const cityName = data.features[0].properties.city;
-					console.log(`The city is: ${cityName}`);
-          cityNameGlobal = cityName;
-				})
-				.catch(error => {
-					console.error('Error:', error);
-				});
-		}
-
-		function printLocation(position) {
-			// console.log("Latitude: " + position.coords.latitude +
-			// 	"\nLongitude: " + position.coords.longitude);
-
-			// get city information using the Geoapify key
-			const cityName = decode_latlong(position.coords.latitude, position.coords.longitude)
-		}
-
-		</script>
 		<script>
+		//	let cityNameGlobal = getLocation();
 
-		// Form Submission
-		try {
-				document.getElementById("dataForm").addEventListener("submit", async (event) => {
-					event.preventDefault();
-					console.log("Form submitted");
-				});
-			} catch (error) {
-				console.error('Lets talk about it: ' + error);
-			}
-
-			console.log("City name after submit: ", cityNameGlobal)
-		
-			const name = document.getElementById("username").value;
-
-			console.log("username: ", name)
+		//	window.alert(cityNameGlobal);
 			
-			const userContract = new web3.eth.Contract(userAbi, userContractAddress);
-			userContract.handleRevert = true;
-		
-			if (!name) {
-			alert("Please fill in all fields");
-			// return;
-			}
+			
+			// const userContract = new web3.eth.Contract(userAbi, userContractAddress);
+			// userContract.handleRevert = true;
 
 			// try {
 		
@@ -166,9 +109,6 @@
 			// }
 				
 	</script>
-
-<script src="./bundle.js" defer></script>
-
 </body>
 
 </html>

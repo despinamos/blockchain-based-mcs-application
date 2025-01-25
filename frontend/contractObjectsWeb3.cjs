@@ -1,4 +1,4 @@
-const  Web3  = require('web3');
+const Web3 = require('web3');
 
 const  web3= new Web3('http://127.0.0.1:8545/');
 
@@ -20,10 +20,68 @@ const taskInitContract = new web3.eth.Contract(taskInitAbi, taskInitAbi);
 userContract.handleRevert = true;
 taskInitContract.handleRevert = true;
 
-async function interact() {
-	// const accounts = await web3.eth.getAccounts();
-	// const defaultAccount = accounts[0];
+window.interact = function() {
+  
+  const accounts = web3.eth.getAccounts();
+  const defaultAccount = accounts[0];
+
+  const userContract = new web3.eth.Contract(userAbi, userContractAddress);
+	userContract.handleRevert = true;
 	console.log("I see you")
+
+
+
+    // Form Submission
+		try {
+      document.getElementById("dataForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const username = document.getElementById("username").value;
+    if(username === "") {
+      alert("Please enter a username");
+    }else{
+      const name = document.getElementById("username").value;
+      console.log("Username after submit: ", name)
+    }
+        console.log("City name after submit: ", cityNameGlobal)
+    });
+    } catch (error) {
+      console.error('Lets talk about it: ' + error);
+    }
 }
 
-// interact();
+
+		window.getLocation = function() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(printLocation);
+			} else {
+				console.log("Geolocation is not supported by this browser.");
+			}
+		}
+
+
+    let cityNameGlobal = " "
+
+		window.decode_latlong = function(lat, long) {
+			// Replace YOUR_API_KEY with the api key you got from Geoapify
+			const apiUrl = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&apiKey=${"4e8a03f4dcc24306a83086b605c64112"}`;
+
+			fetch(apiUrl)
+				.then(response => response.json())
+				.then(data => {
+					// Extract the city name from the response
+					const cityName = data.features[0].properties.city;
+					console.log(`The city is: ${cityName}`);
+          cityNameGlobal = cityName;
+				})
+				.catch(error => {
+					console.error('Error:', error);
+				});
+		}
+
+		window.printLocation = function(position) {
+			// console.log("Latitude: " + position.coords.latitude +
+			// 	"\nLongitude: " + position.coords.longitude);
+
+			// get city information using the Geoapify key
+			const cityName = decode_latlong(position.coords.latitude, position.coords.longitude)
+		}
