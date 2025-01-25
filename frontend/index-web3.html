@@ -24,11 +24,25 @@
 		<button id="requestAccounts" onclick="Hello()">Connect to Metamask</button>
 	</div>
 
-	<script type="module">
+	<form id="dataForm">
+		<label for="username">Enter Full Name to Register:</label>
+		<input type="text" id="username">
+		<button type="submit">Submit form</button>
+	</form>
+
+	<script>
 		
 		if (window.ethereum) {
 			// use the injected Ethereum provider to initialize Web3.js
 			const web3 = new Web3(window.ethereum);
+			try {
+				if (typeof window.ethereum !== 'undefined') {
+					console.log('MetaMask is installed!');
+				}
+			} catch (error) {
+				console.error('Baka!' + error);
+			}
+			
 
 			// check if Ethereum provider comes from MetaMask
 			if (window.ethereum.isMetaMask) {
@@ -63,12 +77,6 @@
 	</script>
 
 	<button onclick="getLocation()">Give Location (city)</button>
-
-	<form id="dataForm">
-		<label for="username">Enter Full Name to Register:</label>
-		<input type="text" id="username">
-		<button type="submit" onclick="interact()">Submit form</button>
-	</form>
 
 
 	<script>
@@ -110,44 +118,53 @@
 			const cityName = decode_latlong(position.coords.latitude, position.coords.longitude)
 		}
 
+		</script>
+		<script>
+
 		// Form Submission
-    	document.getElementById("dataForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        console.log("City name after submit: ", cityNameGlobal)
-    
-        const name = document.getElementById("username").value;
-
-        console.log("username: ", name)
-        
-				const userContract = new web3.eth.Contract(userAbi, userContractAddress);
-				userContract.handleRevert = true;
-    
-        if (!name) {
-        alert("Please fill in all fields");
-        return;
-        }
-    
-        try {
-    
-        // Interact with the user contract
-				//Register user
-				const receipt = await userContract.methods.setUser_Information(name).send({
-					from: defaultAccount,
-					gas: 1000000,
-					gasPrice: '10000000000',
+		try {
+				document.getElementById("dataForm").addEventListener("submit", async (event) => {
+					event.preventDefault();
+					console.log("Form submitted");
 				});
-				console.log('Transaction Hash: ' + receipt.transactionHash);
+			} catch (error) {
+				console.error('Lets talk about it: ' + error);
+			}
 
-				// Get user info
-				const userInfo = await userContract.methods.getUserInformation(0).call();
-				console.log('User information: ' + userInfo);
-    
-        alert("Data successfully stored on the blockchain!");
-        } catch (error) {
-					console.error(error);
-        }
-			})
+			console.log("City name after submit: ", cityNameGlobal)
+		
+			const name = document.getElementById("username").value;
+
+			console.log("username: ", name)
+			
+			const userContract = new web3.eth.Contract(userAbi, userContractAddress);
+			userContract.handleRevert = true;
+		
+			if (!name) {
+			alert("Please fill in all fields");
+			// return;
+			}
+
+			// try {
+		
+			// Interact with the user contract
+					//Register user
+			// 		const receipt = await userContract.methods.setUser_Information(name).send({
+			// 			from: defaultAccount,
+			// 			gas: 1000000,
+			// 			gasPrice: '10000000000',
+			// 		});
+			// 		console.log('Transaction Hash: ' + receipt.transactionHash);
+
+			// 		// Get user info
+			// 		const userInfo = await userContract.methods.getUserInformation(0).call();
+			// 		console.log('User information: ' + userInfo);
+		
+			// alert("Data successfully stored on the blockchain!");
+			// } catch (error) {
+			// 			console.error(error);
+			// }
+				
 	</script>
 
 <script src="./bundle.js" defer></script>
