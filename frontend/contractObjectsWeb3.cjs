@@ -28,25 +28,24 @@ window.interact = function() {
   const userContract = new web3.eth.Contract(userAbi, userContractAddress);
 	userContract.handleRevert = true;
 	console.log("I see you")
+  
+// Form Submission
+  const form = document.getElementById("dataForm");
 
+    let username = document.getElementById("username").value;
 
-
-    // Form Submission
-		try {
-      document.getElementById("dataForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const username = document.getElementById("username").value;
-    if(username === "") {
+    if(username == "") {
       alert("Please enter a username");
-    }else{
-      const name = document.getElementById("username").value;
-      console.log("Username after submit: ", name)
+    } else {
+      console.log("Username after submit: ", username);
+      console.log("City name after submit: ", cityNameGlobal);
     }
-        console.log("City name after submit: ", cityNameGlobal)
-    });
-    } catch (error) {
-      console.error('Lets talk about it: ' + error);
-    }
+      // Reset the form
+      form.reset();
+
+      // Remove the event listener
+      document.getElementById("dataForm").removeEventListener("submit", form);
+
 }
 
 
