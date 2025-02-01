@@ -7,6 +7,7 @@ contract UserInformation {
         uint256 u_id;
         string full_name;
         address user_address;
+        string location;
         uint cancelled_tasks;
         uint completed_tasks;
         uint limit_tasks;
@@ -17,13 +18,13 @@ contract UserInformation {
     mapping(uint256 => User_Registration) public users;
     mapping(address => uint256) public userAddressToId;  // New mapping from address to user ID
 
-    event User_Created(address user_address, string full_name);
+    event User_Created(address user_address, string full_name, string location);
 
     function Set_User_ID() public view returns(uint) {
         return u_ids.length;
     }
 
-    function setUser_Information(string memory _full_name) public {
+    function setUser_Information(string memory _full_name, string memory _location) public {
         uint256 user_ID = Set_User_ID();
 
         // Set user's information
@@ -31,8 +32,7 @@ contract UserInformation {
             u_id: user_ID,
             user_address: msg.sender,
             full_name: _full_name,
-            // latitude: _latitude,
-            // longitude: _longitude, 
+            location: _location,
             cancelled_tasks: 0,
             completed_tasks: 0,
             limit_tasks: 3,  // Default task limit for reputation 50
@@ -42,7 +42,7 @@ contract UserInformation {
         u_ids.push(user_ID);  // Store the new user ID
         userAddressToId[msg.sender] = user_ID;  // Map address to user ID
 
-        emit User_Created(msg.sender, _full_name);  // Emit event
+        emit User_Created(msg.sender, _full_name, _location);  // Emit event
     }
 
     function getUserInformation(uint256 _u_id) public view returns (string memory, uint) {

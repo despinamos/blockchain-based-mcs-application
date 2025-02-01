@@ -39,8 +39,7 @@ contract Task_Initialization is UserInformation{
         uint256 unique_taskid;
         string task_information;
         uint time;
-        //uint256 taskLatitude;
-        //uint256 taskLongitude;
+        string location;
         TaskStatus status;
         int number_of_workers_limit;
         uint reward;
@@ -69,6 +68,7 @@ contract Task_Initialization is UserInformation{
             task_name: _task_name,
             task_information: _task_information,
             time: 7 days,
+            location: users[get_UserID].location,
             status: set_status(),
             number_of_workers_limit: _number_of_workers_limit,
             reward: _reward

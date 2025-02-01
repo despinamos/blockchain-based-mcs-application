@@ -36,6 +36,9 @@ contract Task_Selection is Reward_Penalty_System{
         }
     }
     
+    function compareLocs(string memory location_user, string memory location_task) public pure returns(bool){
+        return keccak256(abi.encodePacked(location_user)) == keccak256(abi.encodePacked(location_task));
+    }
 
     //Function for workers to be selected automatically for tasks
     function Select_Worker() public {
@@ -52,7 +55,7 @@ contract Task_Selection is Reward_Penalty_System{
                 //Will follow the concept of 'First Come First Served'
                 //In other words, the first who meet the requirements will be the first who
                 //will get the task.
-                if ((users[get_UserID].limit_tasks != 0)){
+                if ((users[get_UserID].limit_tasks != 0) && (compareLocs(users[get_UserID].location, tasks[visiting_taskid].location))) {
                     users[get_UserID].limit_tasks -= 1;
                     tasks[visiting_taskid].number_of_workers_limit -= 1;
                     //Temporary storing the address of the workers
