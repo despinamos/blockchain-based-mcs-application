@@ -14,7 +14,7 @@ const { abi: taskInitAbi} = require("../artifacts/contracts/Task_Initialization.
 const { bytecode: userBytecode} = require("../artifacts/contracts/UserInformation.sol/UserInformation.json");
 const { bytecode: taskInitBytecode} = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
 
-// Create contract object
+// Create contract object for User Information and Task Initialization
 
 const userContract = new web3.eth.Contract(userAbi);
 const taskInitContract = new web3.eth.Contract(taskInitAbi);
@@ -26,6 +26,8 @@ async function deploy() {
 	const defaultAccount = providersAccounts[0];
 	console.log('Deployer account:', defaultAccount);
 
+	//user deploy
+
 	const userContractDeployer = userContract.deploy({
 		data: userBytecode,
 		arguments: [1],
@@ -34,7 +36,7 @@ async function deploy() {
 	const userGas = await userContractDeployer.estimateGas({
 		from: defaultAccount,
 	});
-	console.log('Estimated gas:', userGas);
+	console.log('User Estimated gas:', userGas);
 
 	try {
 		const tx = await userContractDeployer.send({
@@ -43,6 +45,30 @@ async function deploy() {
 			gasPrice: 10000000000,
 		});
 		console.log('User contract deployed at address: ' + tx.options.address);
+
+	} catch (error) {
+		console.error(error);
+	}
+
+	//task init deploy
+
+	const taskContractDeployer = taskInitContract.deploy({
+		data: taskInitBytecode,
+		arguments: [1],
+	})
+
+	const taskInitGas = await taskInitContractDeployer.estimateGas({
+		from: defaultAccount,
+	})
+	console.log('Task Init Estimated gas: ', taskInitGas)
+
+	try {
+		const txTask = await taskInitContractDeployer.send({
+			from: defaultAccount,
+			taskInitGas,
+			gasPrice: 10000000000,
+		});
+		console.log('Task Initialization contract deployed at address: ' + txTask.options.address);
 
 	} catch (error) {
 		console.error(error);
@@ -91,7 +117,7 @@ window.interact = async function() {
 		
 			// Interact with the user contract
 			// 		Register user
-					const receipt = await userContract.methods.setUser_Information(username).send({
+					const receipt = await userContract.methods.setUser_Information(username, cityNameGlobal).send({
 						from: defaultAccount,
 						gas: 1000000,
 						gasPrice: '10000000000',

@@ -13,7 +13,7 @@
 
 <body>
 	<h1>
-		HomePage
+		User Register
 	</h1>
 
 	<!-- placeholders -->
@@ -31,6 +31,33 @@
 		<!-- <input type="button" value="Submit" onclick="interact()" defer placeholder="Submit">   -->
 		<button type="submit" onclick="interact()" defer>Submit form</button>
 	</form>
+
+	<hr>
+
+	<div>
+		<h1>
+			Create a Task
+		</h1>
+	</div>
+
+	<div>
+		<form id="taskDataForm">
+			<label for="taskName">Task Name:</label>
+			<input type="text" name="taskName" id="taskName">
+
+			<label for="taskName">Task Information:</label>
+			<input type="text" name="taskInfo" id="taskInfo">
+
+			<label for="taskName">Number of workers required:</label>
+			<input type="text" name="taskWorkers" id="taskWorkers">
+
+			<label for="taskName">Time required:</label>
+			<input type="text" name="taskTime" id="taskTime">
+			
+			<label for="taskName">Task Reward:</label>
+			<input type="text" name="taskReward" id="taskReward">
+		</form>
+	<div>
 
 	<script>
 		
@@ -80,36 +107,6 @@
 
 	<button onclick="getLocation()" defer>Give Location (city)</button>
 
-		<script>
-		//	let cityNameGlobal = getLocation();
-
-		//	window.alert(cityNameGlobal);
-			
-			
-			// const userContract = new web3.eth.Contract(userAbi, userContractAddress);
-			// userContract.handleRevert = true;
-
-			// try {
-		
-			// Interact with the user contract
-					//Register user
-			// 		const receipt = await userContract.methods.setUser_Information(name).send({
-			// 			from: defaultAccount,
-			// 			gas: 1000000,
-			// 			gasPrice: '10000000000',
-			// 		});
-			// 		console.log('Transaction Hash: ' + receipt.transactionHash);
-
-			// 		// Get user info
-			// 		const userInfo = await userContract.methods.getUserInformation(0).call();
-			// 		console.log('User information: ' + userInfo);
-		
-			// alert("Data successfully stored on the blockchain!");
-			// } catch (error) {
-			// 			console.error(error);
-			// }
-				
-	</script>
 </body>
 
 </html>

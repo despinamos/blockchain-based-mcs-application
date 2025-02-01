@@ -1026,7 +1026,7 @@ window.interact = async function() {
 		
 			// Interact with the user contract
 			// 		Register user
-					const receipt = await userContract.methods.setUser_Information(username).send({
+					const receipt = await userContract.methods.setUser_Information(username, cityNameGlobal).send({
 						from: defaultAccount,
 						gas: 1000000,
 						gasPrice: '10000000000',
