@@ -9,17 +9,17 @@ if (typeof window !== "undefined" && window.ethereum) {
 }
 
 const { abi: userAbi} = require("../artifacts/contracts/UserInformation.sol/UserInformation.json");
-const { abi: taskInitAbi} = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
+//const { abi: taskInitAbi} = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
 
 const { bytecode: userBytecode} = require("../artifacts/contracts/UserInformation.sol/UserInformation.json");
-const { bytecode: taskInitBytecode} = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
+//const { bytecode: taskInitBytecode} = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
 
 // Create contract object for User Information and Task Initialization
 
 const userContract = new web3.eth.Contract(userAbi);
-const taskInitContract = new web3.eth.Contract(taskInitAbi);
+//const taskInitContract = new web3.eth.Contract(taskInitAbi);
 userContract.handleRevert = true;
-taskInitContract.handleRevert = true;
+//taskInitContract.handleRevert = true;
 
 async function deploy() {
 	const providersAccounts = await web3.eth.getAccounts();
@@ -29,8 +29,7 @@ async function deploy() {
 	//user deploy
 
 	const userContractDeployer = userContract.deploy({
-		data: userBytecode,
-		arguments: [1],
+		data: userBytecode
 	})
 
 	const userGas = await userContractDeployer.estimateGas({
@@ -50,29 +49,6 @@ async function deploy() {
 		console.error(error);
 	}
 
-	//task init deploy
-
-	const taskContractDeployer = taskInitContract.deploy({
-		data: taskInitBytecode,
-		arguments: [1],
-	})
-
-	const taskInitGas = await taskInitContractDeployer.estimateGas({
-		from: defaultAccount,
-	})
-	console.log('Task Init Estimated gas: ', taskInitGas)
-
-	try {
-		const txTask = await taskInitContractDeployer.send({
-			from: defaultAccount,
-			taskInitGas,
-			gasPrice: 10000000000,
-		});
-		console.log('Task Initialization contract deployed at address: ' + txTask.options.address);
-
-	} catch (error) {
-		console.error(error);
-	}
 }
 
 window.interact = async function() {
