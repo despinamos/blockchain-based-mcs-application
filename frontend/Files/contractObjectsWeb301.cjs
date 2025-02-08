@@ -8,10 +8,10 @@ if (typeof window !== "undefined" && window.ethereum) {
     web3 = new Web3('http://127.0.0.1:8545/');
 }
 
-const { abi: userAbi} = require("../artifacts/contracts/UserInformation.sol/UserInformation.json");
+const { abi: userAbi} = require("../../artifacts/contracts/UserInformation.sol/UserInformation.json");
 //const { abi: taskInitAbi} = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
 
-const { bytecode: userBytecode} = require("../artifacts/contracts/UserInformation.sol/UserInformation.json");
+const { bytecode: userBytecode} = require("../../artifacts/contracts/UserInformation.sol/UserInformation.json");
 //const { bytecode: taskInitBytecode} = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
 
 // Create contract object for User Information and Task Initialization
@@ -59,7 +59,7 @@ window.interact = async function() {
 
   const userContract = new web3.eth.Contract(userAbi);
 	userContract.handleRevert = true;
-	console.log("I see you")
+	console.log("User contract object created")
 
 	 // Use window.ethereum if running in a browser
 	 let providersAccounts = [];

@@ -8,9 +8,9 @@ if (typeof window !== "undefined" && window.ethereum) {
     web3 = new Web3('http://127.0.0.1:8545/');
 }
 
-const { abi: taskInitAbi} = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
+const { abi: taskInitAbi} = require("../../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
 
-const { bytecode: taskInitBytecode} = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
+const { bytecode: taskInitBytecode} = require("../../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json");
 
   
 // Create contract object for User Information and Task Initialization
@@ -45,3 +45,5 @@ window.deploy_Task = async function() {
 		console.error(error);
 	}
 }
+
+

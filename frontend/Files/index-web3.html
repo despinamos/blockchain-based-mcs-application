@@ -6,13 +6,21 @@
 
 	<!-- import Web3.js -->
 	<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-	<script src="./bundle.js" defer></script>
+	<script src="./bundleUser.js" defer></script>
 	<script src="./bundleTask.js" defer></script>
 
  
 </head>
 
 <body>
+
+	<div>
+		<h1>Homepage</h1>
+	</div>
+	<!-- Test Purposes -->
+	<p>Please press button to give location:</p>
+	<button onclick="getLocation()" defer>Give Location (city)</button>
+
 	<h1>
 		User Register
 	</h1>
@@ -107,8 +115,6 @@
 		}
 
 	</script>
-
-	<button onclick="getLocation()" defer>Give Location (city)</button>
 
 </body>
 
