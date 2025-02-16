@@ -1,5 +1,6 @@
 //SPDX-License-Identifier: Unlicense
-
+//Setting compiler version, ranging from 0.7.0 to 0.9.0
+pragma solidity >=0.7.0 < 0.9.0;
 
 //@dev Despoina Moschokarfi 1516
 //@dev Eleni Maria Oikonomou 1529
@@ -8,8 +9,7 @@
 //Note: This is the second and third contract. They both inherit the root contract in the User_Related.sol
 
 
-//Setting compiler version, ranging from 0.7.0 to 0.9.0
-pragma solidity >=0.7.0 <0.9.0;
+
 import "./Reward_Penalty_System.sol";
 
 contract Task_Selection is Reward_Penalty_System{
@@ -226,13 +226,13 @@ contract Task_Selection is Reward_Penalty_System{
         emit DataSubmitted(msg.sender, dataHash);
     }
 
-    // function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string memory){
-    //     bool result;
-    //     uint256 index;
-    //     (result, index) = isWorkerInTask(users[_worker_id].user_address, _unique_taskid);
+    function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string memory){
+        bool result;
+        uint256 index;
+        (result, index) = isWorkerInTask(users[_worker_id].user_address, _unique_taskid);
 
-    //     require(result == true, "This worker is not assigned to this task..");
+        require(result == true, "This worker is not assigned to this task..");
 
-    //     //return worker_data[_unique_taskid].data[];
-    // }
+        return worker_data[_unique_taskid].data[index];
+    }
 }

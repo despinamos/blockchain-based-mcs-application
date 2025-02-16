@@ -15,26 +15,26 @@ import './Task_Initialization.sol';
 contract Reward_Penalty_System is Task_Initialization{
 
 
-    function Reward_Process() public{
+    function Reward_Process(uint256 user_ID) public {
         //pass
-        Reputation_Score_Update();
+        Reputation_Score_Update( user_ID);
     }
 
     //We tested the quality of the data and depending of how insufficient the data is, we give a greater the penalty
-    function Penalty_Process() public {
+    function Penalty_Process(uint256 user_ID) public {
         //Here we take the given data and we check how below of the sufficient quality percentage they are. The lower they are, the higher the penalty percentage.
         //pass
         //Emit task ID has been cancelled ...And call function for Reputation
-        Reputation_Score_Update();
+       Reputation_Score_Update(user_ID);
 
     }
 
 
     
     //We also add to the reputation score
-    function Reputation_Score_Update() public {
+    function Reputation_Score_Update(uint256 user_ID) public {
         //Calculating the users's reputation by using the cancelled and completed requests
-            //uint  rep = users[user_ID].reputation - users[user_ID].cancelled_tasks * 5 + users[user_ID].completed_tasks * 10;
-            //users[user_ID].reputation = rep;
+            uint256  rep = users[user_ID].reputation - users[user_ID].cancelled_tasks * 5 + users[user_ID].completed_tasks * 10;
+            users[user_ID].reputation = rep;
     }
 }
