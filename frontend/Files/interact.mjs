@@ -95,7 +95,7 @@ async function workerSelection(taskSelect) {
         const workerSelected = await taskSelect.Select_Worker();
     console.log("Worker selection process...");
     } catch (error) {
-        console.error('Error during worker selection for task: ', error);
+        console.error('Error during worker selection: ', error);
     }
 }
 
@@ -119,7 +119,6 @@ async function calculateQuality() {
     > When all workers who have submitted data for a certain task are evaluated, the reward is sent to them.
     > If the data quality fails the evaluation, the worker takes a penalty. */
 
-        var ethers = require('ethers');
 
         // var provider = new ethers.providers.JsonRpcProvider("YOUR_QUICKNODE_ENDPOINT");
         // var contractAddress = "CONTRACT_ADDRESS_FROM_REMIX";
@@ -201,12 +200,8 @@ async function calculateQuality() {
 
 async function main() {
     const { userInfo, taskInit } = await deploy();
-    // await userRegistration(userInfo);
-    // await taskInformation(taskInit, "Kick ball!", "Just kick the ball!", 10, 100);
-    document.getElementById("dataForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
-        await userFormSubmission(userInfo);
-    });
+    await userRegistration(userInfo);
+    await taskInformation(taskInit, "Check weather.", "Just check weather.", 10, 100);
 }
 
 main()
