@@ -67,41 +67,10 @@ async function deploy() {
     return { userInfo, taskInit, taskSelect, rewardSys };
 }
 
-async function userFormSubmission(userInfo) {
-    // Form Submission
-    
-        const name = document.getElementById("username").value;
-    
-        if (!name) {
-        alert("Please fill in all fields");
-        return;
-        }
-    
-        try {
-        const accounts = await web3.eth.requestAccounts(); // Request user's wallet accounts
-    
-        // Interact with the contract
-        
-        // userRegistration.methods.setUser_Information(name).send({
-        //     from: accounts[0],
-        // });
-
-        const userReg = await userInfo.setUser_Information(name);
-        await userReg.wait();
-    
-        alert("Data successfully stored on the blockchain!");
-        } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred while submitting data.");
-        }
-}
-
 async function userRegistration(userInfo) {
 
     try {
         const userName = "Melina";
-        // const userLocationLatitude = cloakedLatitude;
-        // const userLocationLongitude = cloakedLongitude;
         const userReg = await userInfo.setUser_Information(userName);
         await userReg.wait(); // Wait for transaction confirmation
         const userData = await userInfo.getUserInformation(0);
