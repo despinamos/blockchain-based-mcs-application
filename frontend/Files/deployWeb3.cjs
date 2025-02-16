@@ -40,6 +40,12 @@ async function deploy() {
 			gasPrice: 10000000000,
 		});
 		console.log('User contract deployed at address: ' + tx.options.address);
+
+		const selector = web3.utils.keccak256("setUser_Information(string, string)").slice(0, 10)
+		console.log(selector)
+
+		const encodedArgs = web3.eth.abi.encodeParameters(["string", "string"], ["ann", "mel"]);
+		console.log(encodedArgs);
 		
 	} catch (error) {
 		console.error(error);
