@@ -10,7 +10,7 @@ function findSmallestDifferenceUnsorted(arr) {
   for (let i = 0; i < arr.length; i++) {
       for (let j = i + 1; j < arr.length; j++) {
           let diff = Math.abs(arr[i] - arr[j])
-          // let diff = Math.hypot(arr[i], arr[j])
+        // let diff = Math.hypot(arr[i], arr[j])
           if (diff < minDiff) {
               minDiff = diff;
               num1 = arr[i];
@@ -50,3 +50,4 @@ console.log(result.numbers[0], result.numbers[1])
 
 const validData = validPointsArray(result.numbers[0], result.numbers[1], dataArray)
 console.log("Valid data and indexes are: ", validData.validData , validData.validIndexes, validData.nonValidIndexes)
+

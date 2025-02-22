@@ -203,6 +203,12 @@ contract Task_Selection is Reward_Penalty_System{
             address[] assigned_addresses;
             string[] data;
     }
+
+// let's suppose we have task1 (3 workers)
+    // unique_taskid = task1_id
+    // assigned_addresses = [addressOfWorker10, addressOfWorker12, addressOfWorker15] = indexes [0, 1, 2]
+    // data = [[dataHashByWorker10], [dataHashByWorker12], [dataHashByWorker15]] = indexes [0, 1, 2]
+
     mapping(uint256 => Data_by_Workers) public worker_data;
 
     //Event for data submission
@@ -226,13 +232,15 @@ contract Task_Selection is Reward_Penalty_System{
         emit DataSubmitted(msg.sender, dataHash);
     }
 
-    function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string memory){
+    function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string[] memory){
         bool result;
         uint256 index;
         (result, index) = isWorkerInTask(users[_worker_id].user_address, _unique_taskid);
 
         require(result == true, "This worker is not assigned to this task..");
 
-        return worker_data[_unique_taskid].data[index];
+        return worker_data[_unique_taskid].data;
     }
+
+    
 }

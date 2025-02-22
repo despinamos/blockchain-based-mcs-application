@@ -72,7 +72,7 @@ async function setTaskInformation(taskInitContract, taskName, taskInfo, taskLoca
 async function getTaskInformation(taskInitContract, taskId) {
   try {
     // Get task info
-    const taskInfo = await taskInitContract.methods.getTaskrInformation(taskId).call()
+    const taskInfo = await taskInitContract.methods.getTaskInformation(taskId).call()
     console.log('Task information: ' + taskInfo)
  } catch (error) {
    concole.error("Error while getting task info", error)
