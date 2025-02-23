@@ -232,13 +232,7 @@ contract Task_Selection is Reward_Penalty_System{
         emit DataSubmitted(msg.sender, dataHash);
     }
 
-    function getDataHashForTask(uint256 _unique_taskid, uint256 _worker_id) public view returns (string[] memory){
-        bool result;
-        uint256 index;
-        (result, index) = isWorkerInTask(users[_worker_id].user_address, _unique_taskid);
-
-        require(result == true, "This worker is not assigned to this task..");
-
+    function getDataHashForTask(uint256 _unique_taskid) public view returns (string[] memory){  
         return worker_data[_unique_taskid].data;
     }
 

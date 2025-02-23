@@ -11,7 +11,7 @@ async function createNode() {
 
 async function addFile(helia, content) {
   const fs = unixfs(helia);
-  const cid = await fs.add(fromString(content));
+  const cid = await fs.addBytes(fromString(content));
   console.log("Added file CID:", cid.toString());
   return cid.toString();
 }

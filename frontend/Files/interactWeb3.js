@@ -112,27 +112,29 @@ async function calculateQuality(taskSelectContract, rewardSysContract, taskId) {
 
   try {
     console.log("Getting data hashes for selected task")
-    const receipt = await taskSelectContract.methods.getDataHashForTask(taskId, workerId).send({
-      from: defaultAccount,
-      gas: 1000000,
-      gasPrice: '10000000000',
-    });
-    console.log('Transaction Hash: ' + receipt.transactionHash)
+    const dataHashArray = await taskSelectContract.methods.getDataHashForTask(taskId).call()
   } catch(error) {
     concole.error("Error returning data hashes: ", error)
   }
 
   // get the actual data from ipfs using the hash
 
-  // run the data through data quality formula
-
   const dataArray = []
 
-  const validDaya = []
-  const validIndexes = []
-  const nonValidIndexes = []
+  for(let i = 0; i < dataHashArray.length; i++) {
+    dataArray.push(getFile(helia, dataHashArray[i]))
+  }
 
+  // run the data through data quality formula
 
+  const result = findSmallestDifferenceUnsorted(dataArray)
+  console.log(result.numbers[0], result.numbers[1])
+
+  const validData = validPointsArray(result.numbers[0], result.numbers[1], dataArray)
+  
+  console.log("Data accepted: ", validData.validData)
+  console.log("Congratulations, you are rewarded: ", validData.validIndexes)
+  console.log("Penalized: ", validData.nonValidIndexes)
 
   // workers who's data was accepted from quality formula are rewarded
 

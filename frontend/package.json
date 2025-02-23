@@ -12,6 +12,8 @@
   "dependencies": {
     "@helia/core": "^0.0.0",
     "@helia/unixfs": "^4.0.1",
+    "blockstore-core": "^5.0.2",
+    "datastore-core": "^10.0.2",
     "frontend": "file:",
     "helia": "^5.2.1"
   }
