@@ -5,12 +5,14 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@helia/core": "^0.0.0",
     "@helia/unixfs": "^4.0.1",
-    "frontend": "file:"
+    "frontend": "file:",
+    "helia": "^5.2.1"
   }
 }

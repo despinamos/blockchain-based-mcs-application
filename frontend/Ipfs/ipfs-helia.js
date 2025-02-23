@@ -1,33 +1,42 @@
-const { Helia } = require('@helia/core');
-const { FilesystemDatastore } = require('@helia/filesystem-datastore');
-const Web3 = require('web3');
+import { createHelia } from 'helia';
+import { unixfs } from '@helia/unixfs';
+import { fromString, toString } from 'uint8arrays';
 
-// Initialize the Helia API
-const datastore = new FilesystemDatastore();
-const helia = await Helia.create({ datastore });
+// Create a Helia instance
+async function createNode() {
+    const helia = await createHelia();
+    console.log("Helia node is ready!");
+    return helia;
+}
 
-// Initialize the web3.js library
-const web3 = new Web3('https://127.0.0.1:5001');
+async function addFile(helia, content) {
+  const fs = unixfs(helia);
+  const cid = await fs.add(fromString(content));
+  console.log("Added file CID:", cid.toString());
+  return cid.toString();
+}
 
-// Define the smart contract interface
-const contractABI = [
-  // Your contract ABI goes here
-];
+async function getFile(helia, cid) {
+  const fs = unixfs(helia);
+  let fileContent = "";
 
-const contractAddress = '0x1234567890123456789012345678901234567890';
-const contract = new web3.eth.Contract(contractABI, contractAddress);
+  for await (const chunk of fs.cat(cid)) {
+      fileContent += toString(chunk);
+  }
 
-// Add a file to IPFS
-const { createFile } = require('@helia/files');
-const file = await createFile('document.pdf', 'PDF content');
-const cid = await helia.add(file);
+  console.log("Retrieved content:", fileContent);
+  return fileContent;
+}
 
-// Store the IPFS CID in the smart contract
-await contract.methods.storeDocument(cid.toString()).send({ from: 'YOUR_ETHEREUM_ADDRESS' });
+async function main() {
+  const helia = await createNode();
+  
+  const content = "Hello, IPFS with Helia!";
+  const cid = await addFile(helia, content);
+  
+  const retrievedContent = await getFile(helia, cid);
 
-// Retrieve the IPFS CID from the smart contract
-const storedCID = await contract.methods.getDocument().call();
+  console.log("Final output:", retrievedContent);
+}
 
-// Retrieve the file from IPFS
-const retrievedFile = await helia.get(storedCID);
-console.log(await retrievedFile.content());
+main().catch(console.error);
