@@ -1,5 +1,5 @@
-function findSmallestDifferenceUnsorted(arr) {
-  if (arr.length < 2) {
+function findSmallestDifferenceUnsorted(dataArray) {
+  if (dataArray.length < 2) {
       return "Array must have at least two numbers";
   }
 
@@ -7,14 +7,13 @@ function findSmallestDifferenceUnsorted(arr) {
   let num1, num2;
 
   // Compare every pair of numbers
-  for (let i = 0; i < arr.length; i++) {
-      for (let j = i + 1; j < arr.length; j++) {
-          let diff = Math.abs(arr[i] - arr[j])
-        // let diff = Math.hypot(arr[i], arr[j])
+  for (let i = 0; i < dataArray.length; i++) {
+      for (let j = i + 1; j < dataArray.length; j++) {
+          let diff = Math.abs(dataArray[i] - dataArray[j])
           if (diff < minDiff) {
               minDiff = diff;
-              num1 = arr[i];
-              num2 = arr[j];
+              num1 = dataArray[i];
+              num2 = dataArray[j];
           }
       }
   }
@@ -49,5 +48,6 @@ const result = findSmallestDifferenceUnsorted(dataArray)
 console.log(result.numbers[0], result.numbers[1])
 
 const validData = validPointsArray(result.numbers[0], result.numbers[1], dataArray)
-console.log("Valid data and indexes are: ", validData.validData , validData.validIndexes, validData.nonValidIndexes)
-
+console.log("Data accepted: ", validData.validData)
+console.log("Congratulations, you are rewarded: ", validData.validIndexes)
+console.log("Penalized: ", validData.nonValidIndexes)
