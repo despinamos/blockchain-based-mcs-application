@@ -33,7 +33,7 @@ contract Task_Initialization is UserInformation{
 
     //Structured Data for Task's Creation
     struct taskCreation{
-        address user_address;
+        address requester_address;
         string requester_name;
         string task_name;
         uint256 unique_taskid;
@@ -46,23 +46,23 @@ contract Task_Initialization is UserInformation{
         //int[] task_data;
     }
 
-    mapping(uint256 => taskCreation)public tasks;
+    mapping(uint256 => taskCreation) internal tasks;
 
-    uint256[] public task_ids;
+    uint256[] internal task_ids;
     //Setting a task's unique ID depending on the length of the array
-    function Set_Task_Unique_ID() public view returns(uint256){
+    function Set_Task_Unique_ID() private view returns(uint256){
         return task_ids.length;
     }
 
 
     //Creating a function that sets and stores Task Information.
-    function setTask_Information(string  memory _task_name, string memory _task_information, int _number_of_workers_limit, uint _reward /*, int[] memory _data*/) public {
+    function setTask_Information(string  memory _task_name, string memory _task_information, int _number_of_workers_limit, uint _reward) public {
         //Adding new task's Information with _unique_taskid playing the role of index.
         uint256 _unique_taskid = Set_Task_Unique_ID();
         uint256 get_UserID = userAddressToId[msg.sender];
 
         tasks[_unique_taskid] = taskCreation({
-            user_address: msg.sender,
+            requester_address: msg.sender,
             requester_name: users[get_UserID].full_name,
             unique_taskid: _unique_taskid,
             task_name: _task_name,
@@ -72,13 +72,13 @@ contract Task_Initialization is UserInformation{
             status: set_status(),
             number_of_workers_limit: _number_of_workers_limit,
             reward: _reward
-          //  task_data: _data
         });
 
         //Setting an array to keep track of the ids respectively
         task_ids.push(_unique_taskid);
 
         emit Task_Created(msg.sender, _task_name, _unique_taskid);
+        
     }
 
     function getTaskInformation(uint256 _task_id) public view returns (string memory, string memory) {
@@ -90,7 +90,7 @@ contract Task_Initialization is UserInformation{
 
 
     //Setting a default status for the created task
-    function set_status() public pure returns (TaskStatus) {
+    function set_status() private pure returns (TaskStatus) {
         return TaskStatus.Available;
     }
     

@@ -14,10 +14,11 @@ import './Task_Initialization.sol';
 contract Reward_Penalty_System is Task_Initialization{
 
 
-    function Reward_Process(uint256 user_ID) public payable {
-        
+    function Reward_Process(uint256 user_ID, uint256 _unique_taskid) public payable {
         //Reward = 1 - Penalty = 0
         // transfer tasks[_unique_taskid].reward to users[user_ID].user_address wallet
+        (bool sent, ) = users[user_ID].user_address.call{value: tasks[_unique_taskid].reward}("");
+        require(sent, "Failed to send Reward");
         Reputation_Score_Update( user_ID, 1, 0);
     }
 
@@ -39,5 +40,7 @@ contract Reward_Penalty_System is Task_Initialization{
         //Calculating the users's reputation by using the cancelled and completed requests
             uint256  rep = users[user_ID].reputation - users[user_ID].cancelled_tasks * 5 + users[user_ID].completed_tasks * 10 + reward - penalty;
             users[user_ID].reputation = rep;
+            Arrange_Limit(user_ID);
     }
+    
 }

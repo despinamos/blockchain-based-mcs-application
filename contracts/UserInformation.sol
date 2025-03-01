@@ -14,13 +14,13 @@ contract UserInformation {
         uint reputation;
     }
 
-    uint256[] public u_ids;
-    mapping(uint256 => User_Registration) public users;
-    mapping(address => uint256) public userAddressToId;  // New mapping from address to user ID
+    uint256[] internal u_ids;
+    mapping(uint256 => User_Registration) internal users;
+    mapping(address => uint256) internal userAddressToId;  // New mapping from address to user ID
 
     event User_Created(address user_address, string full_name, string location);
 
-    function Set_User_ID() public view returns(uint) {
+    function Set_User_ID() private view returns(uint) {
         return u_ids.length;
     }
 
@@ -49,15 +49,8 @@ contract UserInformation {
         return (users[_u_id].full_name, users[_u_id].reputation);
     }
 
-    function Return_S(uint user_id) public view returns(User_Registration memory) {
-        if (user_id < u_ids.length) {
-            return users[user_id];
-        } else {
-            revert("User not found");
-        }
-    }
 
-    function Arrange_Limit(uint256 user_ID) public returns (uint) {
+    function Arrange_Limit(uint256 user_ID) internal returns (uint) {
         if (users[user_ID].reputation < 30) {
             delete users[user_ID];  // Remove user if reputation is too low
         } else if (users[user_ID].reputation >= 30 && users[user_ID].reputation < 50) {

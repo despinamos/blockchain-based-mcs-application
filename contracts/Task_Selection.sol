@@ -6,10 +6,6 @@ pragma solidity >=0.7.0 < 0.9.0;
 //@dev Eleni Maria Oikonomou 1529
 
 
-//Note: This is the second and third contract. They both inherit the root contract in the User_Related.sol
-
-
-
 import "./Reward_Penalty_System.sol";
 
 contract Task_Selection is Reward_Penalty_System{
@@ -19,16 +15,14 @@ contract Task_Selection is Reward_Penalty_System{
             uint256 unique_taskid;
             address[] assigned_addresses;
             int[] data_indexed;
-
-
     }
-    mapping(uint256 => Task_has_Workers) public tw;
-    address[] assigned;
-    int[] data_index;
+    mapping(uint256 => Task_has_Workers) internal tw;
+    address[] private assigned;
+    int[] private data_index;
 
     //Created to test wether the data regarding the tasks are stored or not
     //For testing purposes
-    function get_Task(uint256 u_task) public view returns(taskCreation memory task){
+    function get_Task(uint256 u_task) private view returns(taskCreation memory task){
         if (u_task < task_ids.length){
            return tasks[u_task];
         } else{
@@ -36,7 +30,7 @@ contract Task_Selection is Reward_Penalty_System{
         }
     }
     
-    function compareLocs(string memory location_user, string memory location_task) public pure returns(bool){
+    function compare_location(string memory location_user, string memory location_task) private pure returns(bool){
         return keccak256(abi.encodePacked(location_user)) == keccak256(abi.encodePacked(location_task));
     }
 
@@ -55,7 +49,7 @@ contract Task_Selection is Reward_Penalty_System{
                 //Will follow the concept of 'First Come First Served'
                 //In other words, the first who meet the requirements will be the first who
                 //will get the task.
-                if ((users[get_UserID].limit_tasks != 0) && (compareLocs(users[get_UserID].location, tasks[visiting_taskid].location))) {
+                if ((users[get_UserID].limit_tasks != 0) && (compare_location(users[get_UserID].location, tasks[visiting_taskid].location))) {
                     users[get_UserID].limit_tasks -= 1;
                     tasks[visiting_taskid].number_of_workers_limit -= 1;
                     //Temporary storing the address of the workers
@@ -68,7 +62,7 @@ contract Task_Selection is Reward_Penalty_System{
                 }
                 //Once the number reaches zero, call function to change the task's status
                 if (tasks[visiting_taskid].number_of_workers_limit == 0){
-                    TaskStatus_Update(visiting_taskid, TaskStatus.Reserved);
+                    tasks[visiting_taskid].status = TaskStatus.Reserved;
                     tw[visiting_taskid] = Task_has_Workers({
                         unique_taskid: visiting_taskid,
                         assigned_addresses: assigned,
@@ -84,8 +78,9 @@ contract Task_Selection is Reward_Penalty_System{
         }
     }
 
+
     //Temporary storage for the task ids that share the same requester
-    uint256[] r_ids;
+    uint256[] private r_ids;
 
     //If Requester, then only show the tasks they uploaded, along with the corresponding status and data, if submitted
     function Table_Task_Requester() public {
@@ -95,7 +90,7 @@ contract Task_Selection is Reward_Penalty_System{
         for (uint256 i=0; i < task_ids.length; i++) {
                 uint256 visiting_taskid = task_ids[i];
                 //Temporarily, storing the task ids with the condition that they were created by the same requester
-                if ((msg.sender == tasks[visiting_taskid].user_address)){
+                if ((msg.sender == tasks[visiting_taskid].requester_address)){
                     r_ids.push(visiting_taskid);
                     Show_Task_Information(visiting_taskid);
                 }
@@ -108,9 +103,6 @@ contract Task_Selection is Reward_Penalty_System{
     function Show_Task_Information (uint256 _unique_taskid) private view returns (string memory, string memory){
         return (tasks[_unique_taskid].task_name,tasks[_unique_taskid].task_information);
     }
-    
-    
-
 
     
     //Function where worker is shown the tasks in which he was assigned.
@@ -132,9 +124,9 @@ contract Task_Selection is Reward_Penalty_System{
 
 
     
-    //Function for when a worker decides to not complete the task.
-    function Task_Cancelled(uint256 _unique_taskid) public {
-        require(tasks[_unique_taskid].user_address == msg.sender, "You are not the creator of this task..");
+    //Function for when a requester decides to not complete the task.
+    function Task_Cancelled_By_Requester(uint256 _unique_taskid) public {
+        require(tasks[_unique_taskid].requester_address == msg.sender, "You are not the creator of this task..");
         //uint256 get_UserID = userAddressToId[msg.sender];
         if((getWorkerCount(_unique_taskid) == 0) || (tasks[_unique_taskid].status == TaskStatus.Completed)) {
                 delete tasks[_unique_taskid];
@@ -150,7 +142,7 @@ contract Task_Selection is Reward_Penalty_System{
     }
 
     //Function for when a worker wants to cancel a task
-    function Task_Cancelled_Worker(uint256 _unique_taskid) public {
+    function Task_Cancelled_By_Worker(uint256 _unique_taskid) public {
         bool result;
         uint256 index;
         (result, index) = isWorkerInTask(msg.sender, _unique_taskid);
@@ -163,7 +155,7 @@ contract Task_Selection is Reward_Penalty_System{
     }
 
     //Function to check if a Worker is assigned to a task
-    function isWorkerInTask(address user_address, uint256 _unique_taskid) public view returns (bool, uint256){
+    function isWorkerInTask(address user_address, uint256 _unique_taskid) private view returns (bool, uint256){
         for (uint i = 0; i < getWorkerCount(_unique_taskid); i++) {
             if (tw[_unique_taskid].assigned_addresses[i] == user_address) {
                 return (true , i);
@@ -177,25 +169,6 @@ contract Task_Selection is Reward_Penalty_System{
         return tw[_unique_taskid].assigned_addresses.length; 
     }
 
-    //We tested the quality of the data and depending of how well the data is, we give a better reward
-    function Testing_Quality_Data() public {
-            //pass
-    }
-
-     //Updating the task's status, either automatically either by the user's request
-     function TaskStatus_Update (uint256 _unique_taskid, TaskStatus _status_new)  public {
-        uint256 current_taskid = tasks[_unique_taskid].unique_taskid;
-        
-        //Converting the enum into an uint, depending on the corresponding number: 0,1,2,3. Check comment for enum TaskStatus above
-        uint256 taskstatus_old = uint256(TaskStatus(tasks[_unique_taskid].status));
-        uint256 taskstatus_new = uint256(TaskStatus(_status_new));
-
-        if (taskstatus_old != taskstatus_new){
-            tasks[current_taskid].status = _status_new;
-        }
-
-
-    }
 
     //Creating a struct that has the unique_id as its key value in the mapping
     struct Data_by_Workers{
@@ -209,7 +182,7 @@ contract Task_Selection is Reward_Penalty_System{
     // assigned_addresses = [addressOfWorker10, addressOfWorker12, addressOfWorker15] = indexes [0, 1, 2]
     // data = [[dataHashByWorker10], [dataHashByWorker12], [dataHashByWorker15]] = indexes [0, 1, 2]
 
-    mapping(uint256 => Data_by_Workers) public worker_data;
+    mapping(uint256 => Data_by_Workers) private worker_data;
 
     //Event for data submission
     event DataSubmitted(address indexed worker, string dataHash);
