@@ -62,7 +62,7 @@ contract Task_Selection is Reward_Penalty_System{
 
                 }
                 //Once the number reaches zero, call function to change the task's status
-                if (tasks[visiting_taskid].number_of_workers_limit == 0){
+                if ((tasks[visiting_taskid].number_of_workers_limit == 0) || (j == u_ids.length - 1)){
                     tasks[visiting_taskid].status = TaskStatus.Reserved;
                     tw[visiting_taskid] = Task_has_Workers({
                         unique_taskid: visiting_taskid,
