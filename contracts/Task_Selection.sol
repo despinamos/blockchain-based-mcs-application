@@ -6,7 +6,7 @@ pragma solidity >=0.7.0 < 0.9.0;
 //@dev Eleni Maria Oikonomou 1529
 
 
-import "./Reward_Penalty_System.sol";
+import "contracts/Reward_Penalty_System.sol";
 
 contract Task_Selection is Reward_Penalty_System{
 
@@ -16,7 +16,7 @@ contract Task_Selection is Reward_Penalty_System{
             address[] assigned_addresses;
             int[] data_indexed;
     }
-    mapping(uint256 => Task_has_Workers) internal tw;
+    mapping(uint256 => Task_has_Workers) private tw;
     address[] private assigned;
     int[] private data_index;
 
@@ -41,7 +41,8 @@ contract Task_Selection is Reward_Penalty_System{
             uint256 visiting_taskid = task_ids[i];
 
            if ((tasks[visiting_taskid].status == TaskStatus.Available) && (tasks[visiting_taskid].number_of_workers_limit != 0)) {
-              for (uint256 j=0; j < u_ids.length; j++) { 
+              for (uint256 j=0; j < u_ids.length; j++) {
+
                 uint256 get_UserID = u_ids[j];
                 address ID_to_UserAddress = users[get_UserID].user_address;
 
@@ -49,7 +50,7 @@ contract Task_Selection is Reward_Penalty_System{
                 //Will follow the concept of 'First Come First Served'
                 //In other words, the first who meet the requirements will be the first who
                 //will get the task.
-                if ((users[get_UserID].limit_tasks != 0) && (compare_location(users[get_UserID].location, tasks[visiting_taskid].location))) {
+                if ((users[get_UserID].limit_tasks != 0) && (compare_location(users[get_UserID].location, tasks[visiting_taskid].location)) && (tasks[visiting_taskid].requester_address != ID_to_UserAddress)) {
                     users[get_UserID].limit_tasks -= 1;
                     tasks[visiting_taskid].number_of_workers_limit -= 1;
                     //Temporary storing the address of the workers
@@ -71,6 +72,7 @@ contract Task_Selection is Reward_Penalty_System{
 
                     delete assigned;
                     delete data_index;
+                    break;
                     }    
                 }             
 
@@ -81,9 +83,10 @@ contract Task_Selection is Reward_Penalty_System{
 
     //Temporary storage for the task ids that share the same requester
     uint256[] private r_ids;
+    //uint256[] private w_ids;
 
     //If Requester, then only show the tasks they uploaded, along with the corresponding status and data, if submitted
-    function Table_Task_Requester() public {
+    function Table_Task_Requester() public returns (string memory, string memory){
         //Make a for loop to bring all tasks that the requester has created
         //The ones that show first, are the tasks with submitted data from the worker's side.
         //Afterwards, are the tasks that have yet to be completed. Shows also the number of workers that have taken the task.
@@ -92,7 +95,7 @@ contract Task_Selection is Reward_Penalty_System{
                 //Temporarily, storing the task ids with the condition that they were created by the same requester
                 if ((msg.sender == tasks[visiting_taskid].requester_address)){
                     r_ids.push(visiting_taskid);
-                    Show_Task_Information(visiting_taskid);
+                    return (tasks[visiting_taskid].task_name, tasks[visiting_taskid].task_information);
                 }
                 
             }
@@ -100,23 +103,24 @@ contract Task_Selection is Reward_Penalty_System{
         }
 
     //function for every time there is a match in the Table_Task_Worker function, return the assigned task by adding its task name and information
-    function Show_Task_Information (uint256 _unique_taskid) private view returns (string memory, string memory){
-        return (tasks[_unique_taskid].task_name,tasks[_unique_taskid].task_information);
+    function Show_Task_Information (uint256 _unique_taskid) public view returns (string memory, string memory){
+        return (tasks[_unique_taskid].task_name, tasks[_unique_taskid].task_information);
     }
 
     
     //Function where worker is shown the tasks in which he was assigned.
-    function Table_Task_Worker() public view{
+    function Table_Task_Worker() public view returns (string memory, string memory){
         //Take the structs has_Workers length and store the corresponding unique_taskid
         //in an internal variable
         for (uint256 i=0; i< task_ids.length; i++){
             uint256 visiting_taskid = tw[i].unique_taskid;
+            uint worker_count = getWorkerCount(visiting_taskid);
             //Loop to check each address from the address array of the unique_taskid
             //If there is a match, then push unique_taskid and call function to 
             //return the corresponding results.
-            for (uint256 j=0; j < getWorkerCount(visiting_taskid); j++){
+            for (uint256 j=0; j < worker_count; j++){
                 if(tw[visiting_taskid].assigned_addresses[j] == msg.sender){
-                    Show_Task_Information(visiting_taskid);
+                    return (tasks[visiting_taskid].task_name, tasks[visiting_taskid].task_information);
                 }
             }
         }
