@@ -13,11 +13,10 @@ import './Task_Initialization.sol';
 
 contract Reward_Penalty_System is Task_Initialization{
 
-
-    function Reward_Process(uint256 user_ID, uint256 _unique_taskid) public payable {
+   function Reward_Process(uint256 user_ID, uint256 _unique_taskid) public payable {
         //Reward = 1 - Penalty = 0
         // transfer tasks[_unique_taskid].reward to users[user_ID].user_address wallet
-        (bool sent, ) = users[user_ID].user_address.call{value: tasks[_unique_taskid].reward}("");
+        (bool sent, ) = users[user_ID].user_address.call{value: msg.value}("");
         require(sent, "Failed to send Reward");
         Reputation_Score_Update( user_ID, 1, 0);
     }
@@ -27,6 +26,8 @@ contract Reward_Penalty_System is Task_Initialization{
         //Here we take the given data and we check how below of the sufficient quality percentage they are. The lower they are, the higher the penalty percentage.
         //pass
         //Emit task ID has been cancelled ...And call function for Reputation
+
+        //Amazing!! We have a penalty of 1 and a reward of 0 for the user who has been penalized for the task he/she has cancelled  :(
        Reputation_Score_Update(user_ID, 0, 1);
 
     }
@@ -41,4 +42,5 @@ contract Reward_Penalty_System is Task_Initialization{
             Arrange_Limit(user_ID);
     }
     
+
 }
