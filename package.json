@@ -7,7 +7,7 @@
   "dependencies": {
     "@helia/http": "^2.0.2",
     "@helia/unixfs": "^4.0.1",
-    "ethers": "^6.13.4",
+    "ethers": "^5.8.0",
     "express": "^4.21.2",
     "hardhat-project": "file:",
     "helia": "^5.1.1",
