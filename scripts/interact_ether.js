@@ -9,7 +9,7 @@ if(typeof window !== "undefined" && window.ethereum) {
   provider = new ethers.providers.JsonRpcProvider(url);
 }
 
-const privateKey = "0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e";
+const privateKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 const wallet = new ethers.Wallet(privateKey, provider);
 
 const { abi: userAbi} = require("../artifacts/contracts/UserInformation.sol/UserInformation.json")
@@ -20,30 +20,33 @@ const { abi: taskSelectAbi } = require("../artifacts/contracts/Task_Selection.so
 
 const { abi: rewardSysAbi } = require("../artifacts/contracts/Reward_Penalty_System.sol/Reward_Penalty_System.json")
 
-//In ethers.js, contract methods are called directly as functions:
+// const userContractWithProvider = new ethers.Contract("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", userAbi, provider)
+// const userContractWithSigner = new ethers.Contract("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", userAbi, wallet)
 
-// const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
-// const result = await contract.someFunction();
-
-const userContractWithProvider = new ethers.Contract(userCon_address, userAbi, provider)
-const userContractWithSigner = new ethers.Contract(userCon_address, userAbi, wallet)
-
-async function callSetUserInformation(userContract, userName, userLocation) {
+async function callSetUserInformation(userName, userLocation) {
   console.log("Registering new User process started...");
 
   try {
-    const result = await userContract.setUserInformation(userName, userLocation)
+    const userContract = new ethers.Contract("0x73511669fd4dE447feD18BB79bAFeAC93aB7F31f", userAbi, wallet);
+    const estimatedGas = await userContract.estimateGas.setUser_Information(userName, userLocation);
+
+    const result = await userContract.setUser_Information(userName, userLocation, {
+      gasLimit: estimatedGas.mul(290).div(100),
+    });
+    await result.wait();
     console.log("Data successfully stored on the blockchain!")
   } catch(error) {
-    console.error("Something went wrong", error);
+        console.error("Something went wrong", error);
+
   }
 
 }
 
-async function callGetUserInformation(userContract, userId) {
+async function callGetUserInformation(userId) {
   console.log("Return User info process started...");
 
   try {
+    const userContract = new ethers.Contract("0x73511669fd4dE447feD18BB79bAFeAC93aB7F31f", userAbi, provider)
     const result = await userContract.getUserInformation(userId);
     console.log(result)
   } catch(error) {
@@ -93,3 +96,9 @@ function validPointsArray(num1, num2, dataPoints) {
 
   return { validData: validData, validIndexes: validIndexes, nonValidIndexes: nonValidIndexes}
 }
+
+const interact = async () => {
+  await callSetUserInformation('John Doe', 'New York');
+};
+
+interact().catch(console.error);
