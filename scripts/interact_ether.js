@@ -25,7 +25,8 @@ const { abi: rewardSysAbi } = require("../artifacts/contracts/Reward_Penalty_Sys
 // const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
 // const result = await contract.someFunction();
 
-const userContract = new ethers.Contract(userCon_address, userAbi, provider)
+const userContractWithProvider = new ethers.Contract(userCon_address, userAbi, provider)
+const userContractWithSigner = new ethers.Contract(userCon_address, userAbi, wallet)
 
 async function callSetUserInformation(userContract, userName, userLocation) {
   console.log("Registering new User process started...");
