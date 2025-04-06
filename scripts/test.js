@@ -1,6 +1,10 @@
 var ethers = require('ethers');
 const url = "http://127.0.0.1:8545";
 
+// data quality functions
+const findSmallestDifference = require('./data_quality/dataQuality.js').findSmallestDifference
+const validPointsArray = require('./data_quality/dataQuality.js').validPointsArray
+
 let provider;
 
 if(typeof window !== "undefined" && window.ethereum) {
@@ -23,7 +27,7 @@ const { abi: rewardSysAbi } = require("../artifacts/contracts/Reward_Penalty_Sys
 const { bytecode: userBytecode} = require("../artifacts/contracts/UserInformation.sol/UserInformation.json")
 
 const { bytecode: taskInitBytecode} = require("../artifacts/contracts/Task_Initialization.sol/Task_Initialization.json")
-
+ 
 const { bytecode: taskSelectBytecode } = require("../artifacts/contracts/Task_Selection.sol/Task_Selection.json")
 
 const { bytecode: rewardSysBytecode } = require("../artifacts/contracts/Reward_Penalty_System.sol/Reward_Penalty_System.json")
@@ -173,6 +177,79 @@ async function callGetTaskInformation(taskInitAddress, taskId) {
   }
 }
 
+async function callSelectWorker(taskSelectAddress) {
+  console.log("Worker Selection for tasks started...");
+
+  try {
+    const taskSelectContract = new ethers.Contract(taskSelectAddress, taskSelectAbi, wallet);
+    const estimatedGas = await taskSelectContract.estimateGas.Select_Worker();
+
+    const result = await taskSelectContract.Select_Worker( {
+      gasLimit: estimatedGas.mul(2),
+    });
+    await result.wait();
+    console.log("Worker Selection completed successfully.")
+  } catch (error) {
+      console.error("Something went wrong ", error)
+  }
+}
+
+async function callSubmitting_Data(taskSelectAddress, taskId, dataHash){
+  console.log("Submitting data hash...");
+  try {
+    const taskSelectContract = new ethers.Contract(taskSelectAddress, taskSelectAbi, wallet);
+    const estimatedGas = await taskSelectContract.estimateGas.Submitting_Data(taskId, dataHash);
+
+    const result = await taskSelectContract.Submitting_Data(taskId, dataHash, {
+      gasLimit: estimatedGas.mul(2),
+    });
+    await result.wait();
+    console.log("Data submitted successfully.");
+  } catch (error) {
+    console.error("Something went wrong ", error)
+  }
+}
+
+async function calculateQuality(taskSelectAddress, rewardSysAddress, taskId){
+  // get the data hashes of the data sent by workers for a specific task
+
+  let dataHashArray;
+
+  try {
+    console.log("Getting data hashes for selected task");
+    const taskSelectContract = new ethers.Contract(taskSelectAddress, taskInitAbi, provider);
+
+    dataHashArray = await taskSelectContract.getDataHashForTask(taskId);
+    console.log(result)
+  }catch(error) {
+    console.error("Error returning data hashes: ", error)
+  }
+
+  // get the actual data from ipfs using the hash
+
+  let dataArray = [];
+
+  for(let i = 0; i < dataHashArray.length; i++) {
+    dataArray.push(getFile(helia, dataHashArray[i]))
+  }
+
+  // run the data through data quality formula
+
+  const result = findSmallestDifference(dataArray);
+  console.log(result.numbers[0], result.numbers[1]);
+
+  const validData = validPointsArray(result.numbers[0], result.numbers[1], dataArray);
+
+  console.log("Data accepted: ", validData.validData);
+  console.log("Congratulations, you are rewarded: ", validData.validIndexes);
+  console.log("Penalized: ", validData.nonValidIndexes);
+
+  // workers who's data was accepted from quality formula are rewarded
+
+  // the rest are penalized
+
+  // call reward contract to give rewards / penalties (give specific taskId + indexes of workers accepted/denied)
+}
 
 const deployUserContract = async (userName, userLocation, userId) => {
  const userConAddress = await deployUserInformation();

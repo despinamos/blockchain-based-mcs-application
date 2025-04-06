@@ -83,7 +83,7 @@ async function getUserInformation(userContract, userId) {
      const userInfo = await userContract.methods.getUserInformation(userId).call();
      console.log('User information: ' + userInfo);
   } catch (error) {
-    concole.error("Error while getting user info", error)
+    console.error("Error while getting user info", error)
   }
 
 }
@@ -118,7 +118,7 @@ async function getTaskInformation(taskInitContract, taskId) {
     const taskInfo = await taskInitContract.methods.getTaskInformation(taskId).call()
     console.log('Task information: ' + taskInfo)
  } catch (error) {
-   concole.error("Error while getting task info", error)
+   console.error("Error while getting task info", error)
  }
 }
 
@@ -146,7 +146,7 @@ async function submitData(taskSelectContract, taskId, dataHash) {
   });
   console.log('Transaction Hash: ' + receipt.transactionHash)
   } catch(error) {
-    concole.error("Error submitting data: ", error)
+    console.error("Error submitting data: ", error)
   }
 }
 
@@ -157,7 +157,7 @@ async function calculateQuality(taskSelectContract, rewardSysContract, taskId) {
     console.log("Getting data hashes for selected task")
     const dataHashArray = await taskSelectContract.methods.getDataHashForTask(taskId).call()
   } catch(error) {
-    concole.error("Error returning data hashes: ", error)
+    console.error("Error returning data hashes: ", error)
   }
 
   // get the actual data from ipfs using the hash

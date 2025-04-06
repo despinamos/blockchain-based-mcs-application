@@ -1,4 +1,4 @@
-function findSmallestDifferenceUnsorted(dataArray) {
+function findSmallestDifference(dataArray) {
   if (dataArray.length < 2) {
       return "Array must have at least two numbers";
   }
@@ -42,12 +42,15 @@ function validPointsArray(num1, num2, dataPoints) {
 }
 
 // Test:
-const dataArray = [7, 10, 7.5, 8, 10.8, 11, 13, 12, 10.2, 15, 10.1];
+// const dataArray = [7, 10, 7.5, 8, 10.8, 11, 13, 12, 10.2, 15, 10.1];
 
-const result = findSmallestDifferenceUnsorted(dataArray)
-console.log(result.numbers[0], result.numbers[1])
+// const result = findSmallestDifference(dataArray)
+// console.log(result.numbers[0], result.numbers[1])
 
-const validData = validPointsArray(result.numbers[0], result.numbers[1], dataArray)
-console.log("Data accepted: ", validData.validData)
-console.log("Congratulations, you are rewarded: ", validData.validIndexes)
-console.log("Penalized: ", validData.nonValidIndexes)
+// const validData = validPointsArray(result.numbers[0], result.numbers[1], dataArray)
+// console.log("Data accepted: ", validData.validData)
+// console.log("Congratulations, you are rewarded: ", validData.validIndexes)
+// console.log("Penalized: ", validData.nonValidIndexes)
+
+
+module.exports = { findSmallestDifference, validPointsArray }
