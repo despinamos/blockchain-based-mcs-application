@@ -26,8 +26,6 @@ contract Reward_Penalty_System is Task_Initialization{
         //Here we take the given data and we check how below of the sufficient quality percentage they are. The lower they are, the higher the penalty percentage.
         //pass
         //Emit task ID has been cancelled ...And call function for Reputation
-
-        //Amazing!! We have a penalty of 1 and a reward of 0 for the user who has been penalized for the task he/she has cancelled  :(
        Reputation_Score_Update(user_ID, 0, 1);
 
     }
