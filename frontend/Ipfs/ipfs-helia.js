@@ -28,15 +28,15 @@ async function getFile(helia, cid) {
   return fileContent;
 }
 
-async function main() {
-  const helia = await createNode();
+// async function main() {
+//   const helia = await createNode();
   
-  const content = "Hello, IPFS with Helia!";
-  const cid = await addFile(helia, content);
+//   const content = "Hello, IPFS with Helia!";
+//   const cid = await addFile(helia, content);
   
-  const retrievedContent = await getFile(helia, cid);
+//   const retrievedContent = await getFile(helia, cid);
 
-  console.log("Final output:", retrievedContent);
-}
+//   console.log("Final output:", retrievedContent);
+// }
 
-main().catch(console.error);
+// main().catch(console.error);
