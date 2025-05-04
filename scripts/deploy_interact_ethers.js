@@ -144,15 +144,15 @@ async function callGetUserInformation(userConAddress, userId) {
 
 // Calling Task_Initialization methods
 
-async function callSetTaskInformation(taskInitAddress, taskName, taskInformation, numberOfWorkers, taskReward) {
+async function callSetTaskInformation(taskInitAddress, taskName, taskInformation, time, numberOfWorkers, taskReward) {
 
   console.log("Setting task Information process starting...");
 
   try {
     const taskInitContract = new ethers.Contract(taskInitAddress, taskInitAbi, wallet);
-    const estimatedGas = await taskInitContract.estimateGas.setTask_Information(taskName, taskInformation, numberOfWorkers, taskReward);
+    const estimatedGas = await taskInitContract.estimateGas.setTask_Information(taskName, taskInformation, time, numberOfWorkers, taskReward);
 
-    const result = await taskInitContract.setTask_Information(taskName, taskInformation, numberOfWorkers, taskReward, {
+    const result = await taskInitContract.setTask_Information(taskName, taskInformation, time, numberOfWorkers, taskReward, {
       gasLimit: estimatedGas.mul(2),
     });
     await result.wait();
@@ -257,4 +257,27 @@ const deployUserContract = async (userName, userLocation, userId) => {
  await callGetUserInformation(userConAddress, userId);
 };
 
-deployUserContract("Melina", "Athens", "0").catch(console.error);
+//deployUserContract("Melina", "Athens", "1").catch(console.error);
+
+const deployTaskInit = async (taskName, taskInformation, time, numberOfWorkers, taskReward, taskId) => {
+  const taskInitAddress = await deployTaskInitialization();
+  await callSetTaskInformation(taskInitAddress, taskName, taskInformation, time, numberOfWorkers, taskReward);
+  await callGetTaskInformation(taskInitAddress, taskId);
+};
+
+//deployTaskInit("Task_Test", "Task_Testing", 10, 5, 100, "1").catch(console.error);
+
+const deployTaskSelect = async (taskId) => {
+  const taskSelectAddress = await deployTaskSelection();
+  await callSelectWorker(taskSelectAddress, taskId);
+}
+
+//deployTaskSelect(1).catch(console.error);
+
+const deployRewardSys = async (taskId, dataHash) => {
+  const rewardSysAddress = await deployRewardPenaltySystem();
+  await callSubmitting_Data(rewardSysAddress, taskId, dataHash);
+  await calculateQuality(rewardSysAddress, taskId);
+}
+
+//deployRewardSys(1, "QmXk5v7x8z4Z2g3f6h8g5f6g5f6g5f6g5f6g5f6g5f6g5f").catch(console.error);

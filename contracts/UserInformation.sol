@@ -21,10 +21,13 @@ contract UserInformation {
     event User_Created(address user_address, string full_name, string location);
 
     function Set_User_ID() private view returns(uint) {
-        return u_ids.length;
+        return u_ids.length+1;
     }
 
-    function setUser_Information(string memory _full_name, string memory _location) public {
+    function setUser_Information(string memory _full_name, string memory _location) public {        
+        // Check if the user is already registered
+        require(userAddressToId[msg.sender] == 0, "User already registered.");
+
         uint256 user_ID = Set_User_ID();
 
         // Set user's information
@@ -59,8 +62,8 @@ contract UserInformation {
             users[user_ID].limit_tasks = 3;
         } else if (users[user_ID].reputation >= 70 && users[user_ID].reputation < 90) {
             users[user_ID].limit_tasks = 5;
-        } else {
-            users[user_ID].limit_tasks = 7;
+        } else if (users[user_ID].reputation >= 100) {
+            users[user_ID].reputation = 100;  // Cap reputation at 100
         }
         return users[user_ID].limit_tasks;
     }

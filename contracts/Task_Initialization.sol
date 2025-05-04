@@ -51,12 +51,12 @@ contract Task_Initialization is UserInformation{
     uint256[] internal task_ids;
     //Setting a task's unique ID depending on the length of the array
     function Set_Task_Unique_ID() private view returns(uint256){
-        return task_ids.length;
+        return task_ids.length + 1;
     }
 
 
     //Creating a function that sets and stores Task Information.
-    function setTask_Information(string  memory _task_name, string memory _task_information, int _number_of_workers_limit, uint _reward) public {
+    function setTask_Information(string  memory _task_name, string memory _task_information, uint _time, int _number_of_workers_limit, uint _reward) public {
         //Adding new task's Information with _unique_taskid playing the role of index.
         uint256 _unique_taskid = Set_Task_Unique_ID();
         uint256 get_UserID = userAddressToId[msg.sender];
@@ -67,9 +67,9 @@ contract Task_Initialization is UserInformation{
             unique_taskid: _unique_taskid,
             task_name: _task_name,
             task_information: _task_information,
-            time: 7 days,
+            time: _time,
             location: users[get_UserID].location,
-            status: set_status(),
+            status: TaskStatus.Available,
             number_of_workers_limit: _number_of_workers_limit,
             reward: _reward
         });
@@ -88,10 +88,5 @@ contract Task_Initialization is UserInformation{
     //Event that a Task was created
     event Task_Created(address user_address, string task_name, uint256 unique_taskid);
 
-
-    //Setting a default status for the created task
-    function set_status() private pure returns (TaskStatus) {
-        return TaskStatus.Available;
-    }
     
 }
