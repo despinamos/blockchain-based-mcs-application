@@ -21,12 +21,13 @@ contract UserInformation {
     event User_Created(address user_address, string full_name, string location);
 
     function Set_User_ID() private view returns(uint) {
-        return u_ids.length+1;
+        uint toReturn = u_ids.length;
+        return toReturn++;
     }
 
     function setUser_Information(string memory _full_name, string memory _location) public {        
         // Check if the user is already registered
-        require(userAddressToId[msg.sender] == 0, "User already registered.");
+        require(userAddressToId[msg.sender] != 0, "User already registered.");
 
         uint256 user_ID = Set_User_ID();
 
