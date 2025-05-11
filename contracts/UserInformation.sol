@@ -14,22 +14,19 @@ contract UserInformation {
         uint reputation;
     }
 
+    uint256 public nextUserId = 1;
+
+    mapping(uint256 => User_Registration) public users;
     uint256[] internal u_ids;
-    mapping(uint256 => User_Registration) internal users;
-    mapping(address => uint256) internal userAddressToId;  // New mapping from address to user ID
+    mapping(address => uint256) public userAddressToId;
 
     event User_Created(address user_address, string full_name, string location);
 
-    function Set_User_ID() private view returns(uint) {
-        uint toReturn = u_ids.length;
-        return toReturn++;
-    }
-
     function setUser_Information(string memory _full_name, string memory _location) public {        
         // Check if the user is already registered
-        require(userAddressToId[msg.sender] != 0, "User already registered.");
+        require(userAddressToId[msg.sender] == 0, "User already registered.");
 
-        uint256 user_ID = Set_User_ID();
+        uint256 user_ID = nextUserId;
 
         // Set user's information
         users[user_ID] = User_Registration({
@@ -43,14 +40,16 @@ contract UserInformation {
             reputation: 50  // Default reputation
         });
 
-        u_ids.push(user_ID);  // Store the new user ID
         userAddressToId[msg.sender] = user_ID;  // Map address to user ID
+
+        nextUserId++;
 
         emit User_Created(msg.sender, _full_name, _location);  // Emit event
     }
 
-    function getUserInformation(uint256 _u_id) public view returns (string memory, uint) {
-        return (users[_u_id].full_name, users[_u_id].reputation);
+    function getUserInformation(uint256 _u_id) public view returns (User_Registration memory) {
+        require(_u_id != 0 && _u_id < nextUserId, "Invalid user ID");
+        return users[_u_id];
     }
 
 

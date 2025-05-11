@@ -9,7 +9,7 @@ if(typeof window !== "undefined" && window.ethereum) {
   provider = new ethers.providers.JsonRpcProvider(url);
 }
 
-const privateKey = "0xde9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0";
+const privateKey = "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a";
 const wallet = new ethers.Wallet(privateKey, provider);
 
 const { abi: userAbi} = require("../artifacts/contracts/UserInformation.sol/UserInformation.json")
@@ -74,20 +74,20 @@ async function callGetUserInformation(userConAddress, userId) {
 
 const iface = new ethers.utils.Interface(userAbi);
 
-const dataSetUserInfo = iface.encodeFunctionData("setUser_Information", ["Bob", "New York"]);
+const dataSetUserInfo = iface.encodeFunctionData("setUser_Information", ["Alice", "Wonderland"]);
 //console.log("Set User Info data:", dataSetUserInfo);
 
-const dataGetUserInfo = iface.encodeFunctionData("getUserInformation", [0]);
+const dataGetUserInfo = iface.encodeFunctionData("getUserInformation", [2]);
 //console.log("Get User Info data: ", dataGetUserInfo);
 
 async function send() {
-//  const userConAddress = await deployUserInformation();
-//  console.log("UserInformation contract address: ", userConAddress)
+  // const userConAddress = await deployUserInformation();
+  // console.log("UserInformation contract address: ", userConAddress)
   // const nonce = await provider.getTransactionCount(wallet.address);
   // const gasPrice = await provider.getGasPrice();
 
   // const tx = {
-  //   to: "0x17F24D3b8Bc1150553b54Da30B4d993AcB889212",
+  //   to: "0x850EC3780CeDfdb116E38B009d0bf7a1ef1b8b38",
   //   data: dataSetUserInfo,
   //   nonce,
   //   gasLimit: 10000000,
@@ -96,9 +96,9 @@ async function send() {
 
   // const response = await wallet.signTransaction(tx);
   // console.log("Raw Transaction: ", response);
-  const encodedResult = "0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000320000000000000000000000000000000000000000000000000000000000000005416c696365000000000000000000000000000000000000000000000000000000";
-  const decoded = iface.decodeFunctionResult("getUserInformation", encodedResult);
-  console.log(decoded);
+  // const encodedResult = "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000001000000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000320000000000000000000000000000000000000000000000000000000000000005416c696365000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a576f6e6465726c616e6400000000000000000000000000000000000000000000";
+  // const decoded = iface.decodeFunctionResult("getUserInformation", encodedResult);
+  // console.log(decoded);
 }
 
 send();

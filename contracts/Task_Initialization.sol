@@ -4,10 +4,6 @@
 //@dev Despoina Moschokarfi 1516
 //@dev Eleni Maria Oikonomou 1529
 
-
-//Note: This is the second and third contract. They both inherit the root contract in the User_Related.sol
-
-
 //Setting compiler version, ranging from 0.7.0 to 0.9.0
 pragma solidity >=0.7.0 <0.9.0;
 //Importing the appropriate parent contracts from the corresponding files in order: UserInformation
@@ -46,6 +42,8 @@ contract Task_Initialization is UserInformation{
         //int[] task_data;
     }
 
+    uint256 public nextTaskId = 1;
+
     mapping(uint256 => taskCreation) internal tasks;
 
     uint256[] internal task_ids;
@@ -57,8 +55,8 @@ contract Task_Initialization is UserInformation{
 
     //Creating a function that sets and stores Task Information.
     function setTask_Information(string  memory _task_name, string memory _task_information, uint _time, int _number_of_workers_limit, uint _reward) public {
-        //Adding new task's Information with _unique_taskid playing the role of index.
-        uint256 _unique_taskid = Set_Task_Unique_ID();
+        
+        uint256 _unique_taskid = nextTaskId;
         uint256 get_UserID = userAddressToId[msg.sender];
 
         tasks[_unique_taskid] = taskCreation({
@@ -74,9 +72,7 @@ contract Task_Initialization is UserInformation{
             reward: _reward
         });
 
-        //Setting an array to keep track of the ids respectively
-        task_ids.push(_unique_taskid);
-
+        nextTaskId++;
         emit Task_Created(msg.sender, _task_name, _unique_taskid);
         
     }
