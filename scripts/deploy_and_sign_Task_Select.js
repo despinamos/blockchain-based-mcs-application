@@ -34,3 +34,32 @@ const deployTaskSelection = async () => {
 
   return taskSelectAddress;
 }
+
+const iface = new ethers.utils.Interface(taskSelectAbi);
+
+const dataTableTaskRequester = iface.encodeFunctionData("Table_Task_Requester", );
+
+const dataTableTaskWorker = iface.encodeFunctionData("Table_Task_Worker", );
+
+async function send() {
+  // const taskSelectConAddress = await deployTaskSelection();
+  // console.log("Task Selection contract address: ", taskSelectConAddress)
+  // const nonce = await provider.getTransactionCount(wallet.address);
+  // const gasPrice = await provider.getGasPrice();
+
+  // const tx = {
+  //   to: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+  //   data: dataSetTaskInfo,
+  //   nonce,
+  //   gasLimit: 10000000,
+  //   gasPrice
+  // }
+
+  // const response = await wallet.signTransaction(tx);
+  // console.log("Raw Transaction: ", response);
+  // const encodedResult = "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000075472616666696300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d436865636b207472616666696300000000000000000000000000000000000000";
+  // const decoded = iface.decodeFunctionResult("getTaskInformation", encodedResult);
+  // console.log(decoded);
+}
+
+send();

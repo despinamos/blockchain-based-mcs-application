@@ -34,3 +34,34 @@ const deployRewardPenaltySystem = async () => {
 
   return rewardSysAddress;
 }
+
+const iface = new ethers.utils.Interface(rewardSysAbi);
+
+const dataRewardProcess = iface.encodeFunctionData("Reward_Process", userId, taskId);
+
+const dataPenaltyProcess = iface.encodeFunctionData("Reward_Process", userId);
+
+const dataReputationScoreUpdate = iface.encodeFunctionData("Reward_Process", userId, reward, penalty);
+
+async function send() {
+  // const rewardSysConAddress = await deployRewardPenaltySystem();
+  // console.log("Reward Penalty System contract address: ", rewardSysConAddress)
+  // const nonce = await provider.getTransactionCount(wallet.address);
+  // const gasPrice = await provider.getGasPrice();
+
+  // const tx = {
+  //   to: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+  //   data: dataSetTaskInfo,
+  //   nonce,
+  //   gasLimit: 10000000,
+  //   gasPrice
+  // }
+
+  // const response = await wallet.signTransaction(tx);
+  // console.log("Raw Transaction: ", response);
+  // const encodedResult = "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000075472616666696300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d436865636b207472616666696300000000000000000000000000000000000000";
+  // const decoded = iface.decodeFunctionResult("getTaskInformation", encodedResult);
+  // console.log(decoded);
+}
+
+send();
