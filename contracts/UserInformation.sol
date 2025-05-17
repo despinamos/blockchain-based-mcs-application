@@ -41,7 +41,7 @@ contract UserInformation {
         });
 
         userAddressToId[msg.sender] = user_ID;  // Map address to user ID
-
+        u_ids.push(user_ID);
         nextUserId++;
 
         emit User_Created(msg.sender, _full_name, _location);  // Emit event

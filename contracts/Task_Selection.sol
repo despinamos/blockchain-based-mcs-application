@@ -42,7 +42,7 @@ contract Task_Selection is Reward_Penalty_System{
 
            if ((tasks[visiting_taskid].status == TaskStatus.Available) && (tasks[visiting_taskid].number_of_workers_limit != 0)) {
               for (uint256 j=0; j < u_ids.length; j++) {
-
+                
                 uint256 get_UserID = u_ids[j];
                 address ID_to_UserAddress = users[get_UserID].user_address;
 
