@@ -46,7 +46,7 @@ contract Task_Initialization is UserInformation{
 
     mapping(uint256 => taskCreation) internal tasks;
 
-    uint256[] internal task_ids;
+    uint256[] public task_ids;
     //Setting a task's unique ID depending on the length of the array
     function Set_Task_Unique_ID() private view returns(uint256){
         return task_ids.length + 1;
@@ -55,9 +55,11 @@ contract Task_Initialization is UserInformation{
 
     //Creating a function that sets and stores Task Information.
     function setTask_Information(string  memory _task_name, string memory _task_information, uint _time, int _number_of_workers_limit, uint _reward) public {
-        
-        uint256 _unique_taskid = nextTaskId;
+        require(userAddressToId[msg.sender] != 0, "User not registered.");
         uint256 get_UserID = userAddressToId[msg.sender];
+        require(users[get_UserID].is_Active == true, "User is not active.");
+
+        uint256 _unique_taskid = nextTaskId;
 
         tasks[_unique_taskid] = taskCreation({
             requester_address: msg.sender,
@@ -72,6 +74,7 @@ contract Task_Initialization is UserInformation{
             reward: _reward
         });
 
+        task_ids.push(_unique_taskid);
         nextTaskId++;
         emit Task_Created(msg.sender, _task_name, _unique_taskid);
         
@@ -79,6 +82,10 @@ contract Task_Initialization is UserInformation{
 
     function getTaskInformation(uint256 _task_id) public view returns (string memory, string memory) {
         return (tasks[_task_id].task_name, tasks[_task_id].task_information);
+    }
+
+    function get_task_ids() public view returns(uint256[] memory){
+        return task_ids;
     }
     
     //Event that a Task was created

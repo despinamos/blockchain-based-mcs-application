@@ -12,12 +12,13 @@ contract UserInformation {
         uint completed_tasks;
         uint limit_tasks;
         uint reputation;
+        bool is_Active;
     }
 
     uint256 public nextUserId = 1;
 
     mapping(uint256 => User_Registration) public users;
-    uint256[] internal u_ids;
+    uint256[] public u_ids;
     mapping(address => uint256) public userAddressToId;
 
     event User_Created(address user_address, string full_name, string location);
@@ -37,7 +38,8 @@ contract UserInformation {
             cancelled_tasks: 0,
             completed_tasks: 0,
             limit_tasks: 3,  // Default task limit for reputation 50
-            reputation: 50  // Default reputation
+            reputation: 50,  // Default reputation
+            is_Active: true
         });
 
         userAddressToId[msg.sender] = user_ID;  // Map address to user ID
@@ -55,7 +57,7 @@ contract UserInformation {
 
     function Arrange_Limit(uint256 user_ID) internal returns (uint) {
         if (users[user_ID].reputation < 30) {
-            delete users[user_ID];  // Remove user if reputation is too low
+           users[user_ID].is_Active = false; // De-activate user if reputation is too low
         } else if (users[user_ID].reputation >= 30 && users[user_ID].reputation < 50) {
             users[user_ID].limit_tasks = 1;
         } else if (users[user_ID].reputation >= 50 && users[user_ID].reputation < 70) {
@@ -66,5 +68,9 @@ contract UserInformation {
             users[user_ID].reputation = 100;  // Cap reputation at 100
         }
         return users[user_ID].limit_tasks;
+    }
+
+    function Get_u_ids() public view returns (uint256[] memory){
+        return u_ids;
     }
 }

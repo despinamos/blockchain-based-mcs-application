@@ -6,7 +6,7 @@ pragma solidity >=0.7.0 < 0.9.0;
 //@dev Eleni Maria Oikonomou 1529
 
 
-import "contracts/Reward_Penalty_System.sol";
+import "./Reward_Penalty_System.sol";
 
 contract Task_Selection is Reward_Penalty_System{
 
@@ -17,8 +17,8 @@ contract Task_Selection is Reward_Penalty_System{
             int[] data_indexed;
     }
     mapping(uint256 => Task_has_Workers) private tw;
-    address[] private assigned;
-    int[] private data_index;
+    address[] public assigned;
+    int[] public data_index;
 
     //Created to test wether the data regarding the tasks are stored or not
     //For testing purposes
@@ -36,14 +36,19 @@ contract Task_Selection is Reward_Penalty_System{
 
     //Function for workers to be selected automatically for tasks
     function Select_Worker() public {
+        delete assigned;
+        delete data_index;
+
         //for loop for all tasks
         for (uint256 i=0; i < task_ids.length; i++) {
             uint256 visiting_taskid = task_ids[i];
 
            if ((tasks[visiting_taskid].status == TaskStatus.Available) && (tasks[visiting_taskid].number_of_workers_limit != 0)) {
               for (uint256 j=0; j < u_ids.length; j++) {
-                
                 uint256 get_UserID = u_ids[j];
+                 if(users[get_UserID].is_Active == false){
+                    continue;
+                }
                 address ID_to_UserAddress = users[get_UserID].user_address;
 
                 //Will be checking the users array with certain parameters. 
@@ -67,9 +72,9 @@ contract Task_Selection is Reward_Penalty_System{
                     tw[visiting_taskid] = Task_has_Workers({
                         unique_taskid: visiting_taskid,
                         assigned_addresses: assigned,
-                        data_indexed:data_index
+                        data_indexed: data_index
                     }); 
-
+                    
                     delete assigned;
                     delete data_index;
                     break;
