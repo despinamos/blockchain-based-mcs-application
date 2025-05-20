@@ -7,8 +7,9 @@ pragma solidity >=0.7.0 < 0.9.0;
 
 
 import "./Reward_Penalty_System.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract Task_Selection is Reward_Penalty_System{
+contract Task_Selection is Reward_Penalty_System {
 
     //Creating a struct that has the unique_id as its key value in the mapping
     struct Task_has_Workers{
@@ -34,53 +35,55 @@ contract Task_Selection is Reward_Penalty_System{
         return keccak256(abi.encodePacked(location_user)) == keccak256(abi.encodePacked(location_task));
     }
 
-    //Function for workers to be selected automatically for tasks
+     //Function for workers to be selected automatically for tasks
     function Select_Worker() public {
         delete assigned;
         delete data_index;
 
         //for loop for all tasks
-        for (uint256 i=0; i < task_ids.length; i++) {
-            uint256 visiting_taskid = task_ids[i];
+        for (uint256 i=0; i < task_ids.length; i++) { 
+            uint256 visiting_taskid = task_ids[i]; 
+            uint256 assignCounter = 0;
 
            if ((tasks[visiting_taskid].status == TaskStatus.Available) && (tasks[visiting_taskid].number_of_workers_limit != 0)) {
-              for (uint256 j=0; j < u_ids.length; j++) {
-                uint256 get_UserID = u_ids[j];
-                 if(users[get_UserID].is_Active == false){
-                    continue;
-                }
-                address ID_to_UserAddress = users[get_UserID].user_address;
+                for (uint256 j=0; j < u_ids.length; j++) { 
+                    uint256 get_UserID = u_ids[j]; 
+                    if(users[get_UserID].is_Active == false){
+                        continue;
+                    }
+                    address ID_to_UserAddress = users[get_UserID].user_address;
 
-                //Will be checking the users array with certain parameters. 
-                //Will follow the concept of 'First Come First Served'
-                //In other words, the first who meet the requirements will be the first who
-                //will get the task.
-                if ((users[get_UserID].limit_tasks != 0) && (compare_location(users[get_UserID].location, tasks[visiting_taskid].location)) && (tasks[visiting_taskid].requester_address != ID_to_UserAddress)) {
-                    users[get_UserID].limit_tasks -= 1;
-                    tasks[visiting_taskid].number_of_workers_limit -= 1;
-                    //Temporary storing the address of the workers
-                    assigned.push(ID_to_UserAddress);
-                    //Temporary storing the worker's index to create the appropriate length
-                    data_index.push(0);
+                    // Check if Worker is already in Task
+                    bool result;
+                    (result, ) = isWorkerInTask(ID_to_UserAddress, visiting_taskid);
 
+                    if(result) {
+                        continue;
+                    }
 
+                    //Will be checking the users array with certain parameters. 
+                    //Will follow the concept of 'First Come First Served'
+                    //In other words, the first who meet the requirements will be the first who
+                    //will get the task.
+                    if ((users[get_UserID].limit_tasks != 0) && (compare_location(users[get_UserID].location, tasks[visiting_taskid].location)) && (tasks[visiting_taskid].requester_address != ID_to_UserAddress)) {
+                        users[get_UserID].limit_tasks -= 1;
+                        tasks[visiting_taskid].number_of_workers_limit -= 1;
+                        //Temporary storing the address of the workers
+                       // assigned.push(ID_to_UserAddress);
+                        assignCounter++;
+                        //Temporary storing the worker's index to create the appropriate length
+                        //data_index.push(0);
+                        tw[visiting_taskid].unique_taskid = visiting_taskid;
+                        tw[visiting_taskid].assigned_addresses.push(ID_to_UserAddress);
+                        tw[visiting_taskid].data_indexed.push(0);
 
-                }
-                //Once the number reaches zero, call function to change the task's status
-                if ((tasks[visiting_taskid].number_of_workers_limit == 0) || (j == u_ids.length - 1)){
-                    tasks[visiting_taskid].status = TaskStatus.Reserved;
-                    tw[visiting_taskid] = Task_has_Workers({
-                        unique_taskid: visiting_taskid,
-                        assigned_addresses: assigned,
-                        data_indexed: data_index
-                    }); 
-                    
-                    delete assigned;
-                    delete data_index;
-                    break;
-                    }    
+                    }
+                    //Once the number reaches zero, call function to change the task's status
+                    if (tasks[visiting_taskid].number_of_workers_limit == 0){
+                        tasks[visiting_taskid].status = TaskStatus.Reserved;
+                        break;
+                    } 
                 }             
-
            }
         }
     }
@@ -91,21 +94,37 @@ contract Task_Selection is Reward_Penalty_System{
     //uint256[] private w_ids;
 
     //If Requester, then only show the tasks they uploaded, along with the corresponding status and data, if submitted
-    function Table_Task_Requester() public returns (string memory, string memory){
+    function Table_Task_Requester() public view returns (string[] memory requesterTasks){
         //Make a for loop to bring all tasks that the requester has created
         //The ones that show first, are the tasks with submitted data from the worker's side.
         //Afterwards, are the tasks that have yet to be completed. Shows also the number of workers that have taken the task.
-        for (uint256 i=0; i < task_ids.length; i++) {
-                uint256 visiting_taskid = task_ids[i];
-                //Temporarily, storing the task ids with the condition that they were created by the same requester
-                if ((msg.sender == tasks[visiting_taskid].requester_address)){
-                    r_ids.push(visiting_taskid);
-                    return (tasks[visiting_taskid].task_name, tasks[visiting_taskid].task_information);
-                }
-                
+        uint256 count = 0;
+        for(uint256 i = 0; i < task_ids.length; i++) {
+            uint256 visiting_taskid = task_ids[i];
+            if (tasks[visiting_taskid].requester_address == msg.sender) {
+                count++;
             }
-            delete r_ids;
         }
+        requesterTasks = new string[](count);
+        uint256 index = 0;
+        
+        for (uint256 i=0; i < task_ids.length; i++) {
+                
+            uint256 visiting_taskid = task_ids[i];
+            if ((msg.sender == tasks[visiting_taskid].requester_address)){
+                string memory taskInfo = string(abi.encodePacked(
+                    tasks[visiting_taskid].task_name,
+                    " - ",
+                    tasks[visiting_taskid].task_information,
+                    " - ",
+                    getTaskStatus(visiting_taskid)
+                    ));
+                requesterTasks[index] = taskInfo;
+                index++;
+            }    
+        }
+        return requesterTasks;
+    }
 
     //function for every time there is a match in the Table_Task_Worker function, return the assigned task by adding its task name and information
     function Show_Task_Information (uint256 _unique_taskid) public view returns (string memory, string memory){
@@ -113,25 +132,47 @@ contract Task_Selection is Reward_Penalty_System{
     }
 
     
-    //Function where worker is shown the tasks in which he was assigned.
-    function Table_Task_Worker() public view returns (string memory, string memory){
-        //Take the structs has_Workers length and store the corresponding unique_taskid
-        //in an internal variable
-        for (uint256 i=0; i< task_ids.length; i++){
-            uint256 visiting_taskid = tw[i].unique_taskid;
-            uint worker_count = getWorkerCount(visiting_taskid);
-            //Loop to check each address from the address array of the unique_taskid
-            //If there is a match, then push unique_taskid and call function to 
-            //return the corresponding results.
-            for (uint256 j=0; j < worker_count; j++){
-                if(tw[visiting_taskid].assigned_addresses[j] == msg.sender){
-                    return (tasks[visiting_taskid].task_name, tasks[visiting_taskid].task_information);
+    //Function where worker is shown the tasks which he was assigned.
+    function Table_Task_Worker() public view returns (string[] memory){
+        uint256 count = 0;
+        for (uint256 i = 0; i < task_ids.length; i++) {
+            uint256 visiting_taskid = task_ids[i];
+            uint256 workerCount = getWorkerCount(visiting_taskid);
+            for (uint256 j = 0; j < workerCount; j++) {
+                if (tw[visiting_taskid].assigned_addresses[j] == msg.sender) {
+                    count++;
+                    break;
                 }
             }
         }
+
+        string[] memory workerTasks = new string[](count);
+        uint256 index = 0;
+        string memory strReward;
+
+        for (uint256 i = 0; i < task_ids.length; i++) {
+            uint256 visiting_taskid = task_ids[i];
+            uint256 workerCount = getWorkerCount(visiting_taskid);
+            for (uint256 j = 0; j < workerCount; j++) {
+                if (tw[visiting_taskid].assigned_addresses[j] == msg.sender) {
+                    strReward = Strings.toString(tasks[visiting_taskid].reward);
+                    string memory taskInfo = string(abi.encodePacked(
+                    " Name: ",
+                    tasks[visiting_taskid].task_name,
+                    " - Information: ",
+                    tasks[visiting_taskid].task_information,
+                    " - Reward: ",
+                    strReward
+                    ));
+                    workerTasks[index] = taskInfo;
+                    index++;
+                    break;
+                }
+            }
+        }
+
+        return workerTasks;
     }
-
-
     
     //Function for when a requester decides to not complete the task.
     function Task_Cancelled_By_Requester(uint256 _unique_taskid) public {
@@ -174,8 +215,12 @@ contract Task_Selection is Reward_Penalty_System{
     }
 
     //returns how many assigned addresses (workers) a task has currently
-    function getWorkerCount(uint _unique_taskid) private view returns(uint) { 
+    function getWorkerCount(uint _unique_taskid) public view returns(uint) { 
         return tw[_unique_taskid].assigned_addresses.length; 
+    }
+
+    function getWorkersInTask(uint _unique_taskid) public view returns(address[] memory){
+        return tw[_unique_taskid].assigned_addresses;
     }
 
 
@@ -218,5 +263,4 @@ contract Task_Selection is Reward_Penalty_System{
         return worker_data[_unique_taskid].data;
     }
 
-    
 }

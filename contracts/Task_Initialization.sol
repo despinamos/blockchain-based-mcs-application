@@ -84,6 +84,17 @@ contract Task_Initialization is UserInformation{
         return (tasks[_task_id].task_name, tasks[_task_id].task_information);
     }
 
+    function getTaskStatus(uint256 _task_id) public view returns (string memory) {
+        TaskStatus status = tasks[_task_id].status;
+
+        if (status == TaskStatus.Available) return "Available";
+        if (status == TaskStatus.Reserved) return "Reserved";
+        if (status == TaskStatus.Completed) return "Completed";
+        if (status == TaskStatus.Cancelled) return "Cancelled";
+
+        return "Unknown";
+    }
+
     function get_task_ids() public view returns(uint256[] memory){
         return task_ids;
     }

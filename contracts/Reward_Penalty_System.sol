@@ -13,7 +13,7 @@ import './Task_Initialization.sol';
 
 contract Reward_Penalty_System is Task_Initialization{
 
-   function Reward_Process(uint256 user_ID, uint256 _unique_taskid) public payable {
+   function Reward_Process(uint256 user_ID /*, uint256 _unique_taskid*/ ) public payable {
         //Reward = 1 - Penalty = 0
         // transfer tasks[_unique_taskid].reward to users[user_ID].user_address wallet
         (bool sent, ) = users[user_ID].user_address.call{value: msg.value}("");
