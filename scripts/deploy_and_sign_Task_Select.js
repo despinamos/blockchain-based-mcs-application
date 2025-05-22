@@ -9,7 +9,7 @@ if(typeof window !== "undefined" && window.ethereum) {
   provider = new ethers.providers.JsonRpcProvider(url);
 }
 
-const privateKey = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d";
+const privateKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 const wallet = new ethers.Wallet(privateKey, provider);
 
 const { abi: taskSelectAbi } = require("../artifacts/contracts/Task_Selection.sol/Task_Selection.json")
@@ -37,9 +37,35 @@ const deployTaskSelection = async () => {
 
 const iface = new ethers.utils.Interface(taskSelectAbi);
 
+// User Information functions
+const dataSetUserInfo = iface.encodeFunctionData("setUser_Information", ["Anna", "Kozani"]);
+//console.log("Set User Info data:", dataSetUserInfo);
+
+const dataGetUserInfo = iface.encodeFunctionData("getUserInformation", [1]);
+//console.log("Get User Info data: ", dataGetUserInfo);
+
+// Task Initialization functions
+const dataSetTaskInfo = iface.encodeFunctionData("setTask_Information", ["Play", "Play Persona", 3, 3, 100]);
+//console.log("Set User Info data:", dataSetUserInfo);
+
+const dataGetTaskInfo = iface.encodeFunctionData("getTaskInformation", [1]);
+//console.log("Get Task Info data: ", dataGetTaskInfo);
+
+//Reward Penalty System functions
+// const dataRewardProcess = iface.encodeFunctionData("Reward_Process", userId, taskId);
+
+// const dataPenaltyProcess = iface.encodeFunctionData("Reward_Process", userId);
+
+// const dataReputationScoreUpdate = iface.encodeFunctionData("Reward_Process", userId, reward, penalty);
+
+// Task Select functions
 const dataTableTaskRequester = iface.encodeFunctionData("Table_Task_Requester", );
+//console.log("Table Task Requester, ", dataTableTaskRequester);
 
 const dataTableTaskWorker = iface.encodeFunctionData("Table_Task_Worker", );
+console.log("Table Task Worker, ", dataTableTaskWorker);
+
+const dataSelectWorker = iface.encodeFunctionData("Select_Worker", );
 
 async function send() {
   // const taskSelectConAddress = await deployTaskSelection();
@@ -48,8 +74,8 @@ async function send() {
   // const gasPrice = await provider.getGasPrice();
 
   // const tx = {
-  //   to: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-  //   data: dataSetTaskInfo,
+  //   to: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  //   data: dataSelectWorker,
   //   nonce,
   //   gasLimit: 10000000,
   //   gasPrice
@@ -57,9 +83,9 @@ async function send() {
 
   // const response = await wallet.signTransaction(tx);
   // console.log("Raw Transaction: ", response);
-  // const encodedResult = "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000075472616666696300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d436865636b207472616666696300000000000000000000000000000000000000";
-  // const decoded = iface.decodeFunctionResult("getTaskInformation", encodedResult);
-  // console.log(decoded);
+  const encodedResult = "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000035204e616d653a20506c6179202d20496e666f726d6174696f6e3a20506c617920506572736f6e61202d205265776172643a203130300000000000000000000000";
+  const decoded = iface.decodeFunctionResult("Table_Task_Requester", encodedResult);
+  console.log(decoded);
 }
 
 send();
