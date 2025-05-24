@@ -1,5 +1,6 @@
 {
   "name": "hardhat-project",
+  "type": "module",
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.8",
     "@nomicfoundation/hardhat-ethers": "^3.0.8",
@@ -26,12 +27,14 @@
     "@helia/http": "^2.0.2",
     "@helia/unixfs": "^4.0.1",
     "@openzeppelin/contracts": "^5.3.0",
-    "@pinata/sdk": "^2.1.0",
+    "dotenv": "^16.5.0",
     "ethers": "^5.8.0",
     "express": "^4.21.2",
     "hardhat-project": "file:",
     "helia": "^5.1.1",
     "kubo-rpc-client": "^5.0.2",
+    "pinata": "^2.4.0",
+    "react": "^19.1.0",
     "touch": "^3.1.1",
     "web3": "^4.16.0"
   }
