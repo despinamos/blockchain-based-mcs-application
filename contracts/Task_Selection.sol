@@ -15,11 +15,9 @@ contract Task_Selection is Reward_Penalty_System {
     struct Task_has_Workers{
             uint256 unique_taskid;
             address[] assigned_addresses;
-            int[] data_indexed;
+            string[] data_index;
     }
     mapping(uint256 => Task_has_Workers) private tw;
-    address[] public assigned;
-    int[] public data_index;
 
     //Created to test wether the data regarding the tasks are stored or not
     //For testing purposes
@@ -37,13 +35,10 @@ contract Task_Selection is Reward_Penalty_System {
 
      //Function for workers to be selected automatically for tasks
     function Select_Worker() public {
-        delete assigned;
-        delete data_index;
-
+    
         //for loop for all tasks
         for (uint256 i=0; i < task_ids.length; i++) { 
             uint256 visiting_taskid = task_ids[i]; 
-            uint256 assignCounter = 0;
 
            if ((tasks[visiting_taskid].status == TaskStatus.Available) && (tasks[visiting_taskid].number_of_workers_limit != 0)) {
                 for (uint256 j=0; j < u_ids.length; j++) { 
@@ -54,12 +49,13 @@ contract Task_Selection is Reward_Penalty_System {
                     address ID_to_UserAddress = users[get_UserID].user_address;
 
                     // Check if Worker is already in Task
-                    bool result;
-                    (result, ) = isWorkerInTask(ID_to_UserAddress, visiting_taskid);
+                    bool result_inTask;
 
-                    if(result) {
+                    (result_inTask, ) = isWorkerInTask(ID_to_UserAddress, visiting_taskid);
+                    if(result_inTask) {
                         continue;
                     }
+
 
                     //Will be checking the users array with certain parameters. 
                     //Will follow the concept of 'First Come First Served'
@@ -68,15 +64,20 @@ contract Task_Selection is Reward_Penalty_System {
                     if ((users[get_UserID].limit_tasks != 0) && (compare_location(users[get_UserID].location, tasks[visiting_taskid].location)) && (tasks[visiting_taskid].requester_address != ID_to_UserAddress)) {
                         users[get_UserID].limit_tasks -= 1;
                         tasks[visiting_taskid].number_of_workers_limit -= 1;
-                        //Temporary storing the address of the workers
-                       // assigned.push(ID_to_UserAddress);
-                        assignCounter++;
-                        //Temporary storing the worker's index to create the appropriate length
-                        //data_index.push(0);
-                        tw[visiting_taskid].unique_taskid = visiting_taskid;
-                        tw[visiting_taskid].assigned_addresses.push(ID_to_UserAddress);
-                        tw[visiting_taskid].data_indexed.push(0);
+                        //Checking for address(0) and proceed to overwrite if found in visiting_taskid
+                        bool cancelled_index;
+                        uint index;
+                        (cancelled_index, index) = isWorkerInTask(address(0), visiting_taskid);
 
+                        if(cancelled_index){
+                            tw[visiting_taskid].assigned_addresses[index] = ID_to_UserAddress;
+                            tw[visiting_taskid].data_index[index] = "0";
+                        }else{
+                            tw[visiting_taskid].unique_taskid = visiting_taskid;
+                            tw[visiting_taskid].assigned_addresses.push(ID_to_UserAddress);
+                            tw[visiting_taskid].data_index.push("0");
+
+                        }
                     }
                     //Once the number reaches zero, call function to change the task's status
                     if (tasks[visiting_taskid].number_of_workers_limit == 0){
@@ -88,13 +89,8 @@ contract Task_Selection is Reward_Penalty_System {
         }
     }
 
-
-    //Temporary storage for the task ids that share the same requester
-    uint256[] private r_ids;
-    //uint256[] private w_ids;
-
     //If Requester, then only show the tasks they uploaded, along with the corresponding status and data, if submitted
-    function Table_Task_Requester() public view returns (string[] memory requesterTasks){
+    function Table_Task_Requester() public view returns (string[] memory){
         //Make a for loop to bring all tasks that the requester has created
         //The ones that show first, are the tasks with submitted data from the worker's side.
         //Afterwards, are the tasks that have yet to be completed. Shows also the number of workers that have taken the task.
@@ -105,7 +101,7 @@ contract Task_Selection is Reward_Penalty_System {
                 count++;
             }
         }
-        requesterTasks = new string[](count);
+        string[] memory requesterTasks = new string[](count);
         uint256 index = 0;
         
         for (uint256 i=0; i < task_ids.length; i++) {
@@ -125,12 +121,6 @@ contract Task_Selection is Reward_Penalty_System {
         }
         return requesterTasks;
     }
-
-    //function for every time there is a match in the Table_Task_Worker function, return the assigned task by adding its task name and information
-    function Show_Task_Information (uint256 _unique_taskid) public view returns (string memory, string memory){
-        return (tasks[_unique_taskid].task_name, tasks[_unique_taskid].task_information);
-    }
-
     
     //Function where worker is shown the tasks which he was assigned.
     function Table_Task_Worker() public view returns (string[] memory){
@@ -143,6 +133,7 @@ contract Task_Selection is Reward_Penalty_System {
                     count++;
                     break;
                 }
+            
             }
         }
 
@@ -177,18 +168,21 @@ contract Task_Selection is Reward_Penalty_System {
     //Function for when a requester decides to not complete the task.
     function Task_Cancelled_By_Requester(uint256 _unique_taskid) public {
         require(tasks[_unique_taskid].requester_address == msg.sender, "You are not the creator of this task..");
-        //uint256 get_UserID = userAddressToId[msg.sender];
-        if((getWorkerCount(_unique_taskid) == 0) || (tasks[_unique_taskid].status == TaskStatus.Completed)) {
-                delete tasks[_unique_taskid];
-                delete task_ids[_unique_taskid];
-        }else{
+        uint256 get_UserID = userAddressToId[msg.sender];
+        users[get_UserID].cancelled_tasks++;
+
+        if(getWorkerCount(_unique_taskid) != 0) {
             for (uint256 i=0; i< getWorkerCount(_unique_taskid); i++){
-                if(tw[_unique_taskid].assigned_addresses[i] == msg.sender){
-                    //
-                    delete tw[_unique_taskid].assigned_addresses[i];
-                }
+                address User_Address = tw[_unique_taskid].assigned_addresses[i];
+                if (User_Address == address(0))
+                    continue;
+                get_UserID = userAddressToId[User_Address];
+                users[get_UserID].limit_tasks++;
+                delete tw[_unique_taskid].assigned_addresses[i];
             }
         }
+        tasks[_unique_taskid].status = TaskStatus.Cancelled; 
+
     }
 
     //Function for when a worker wants to cancel a task
@@ -200,7 +194,12 @@ contract Task_Selection is Reward_Penalty_System {
         require(result == true, "You are not assigned to this task..");
         uint256 get_UserID = userAddressToId[msg.sender];
         users[get_UserID].cancelled_tasks++;
+        users[get_UserID].limit_tasks++;
         delete tw[_unique_taskid].assigned_addresses[index];
+
+        if (tasks[_unique_taskid].status != TaskStatus.Available) {
+           tasks[_unique_taskid].status = TaskStatus.Available;
+        }
 
     }
 
@@ -223,21 +222,6 @@ contract Task_Selection is Reward_Penalty_System {
         return tw[_unique_taskid].assigned_addresses;
     }
 
-
-    //Creating a struct that has the unique_id as its key value in the mapping
-    struct Data_by_Workers{
-            uint256 unique_taskid;
-            address[] assigned_addresses;
-            string[] data;
-    }
-
-// let's suppose we have task1 (3 workers)
-    // unique_taskid = task1_id
-    // assigned_addresses = [addressOfWorker10, addressOfWorker12, addressOfWorker15] = indexes [0, 1, 2]
-    // data = [[dataHashByWorker10], [dataHashByWorker12], [dataHashByWorker15]] = indexes [0, 1, 2]
-
-    mapping(uint256 => Data_by_Workers) private worker_data;
-
     //Event for data submission
     event DataSubmitted(address indexed worker, string dataHash);
 
@@ -250,17 +234,15 @@ contract Task_Selection is Reward_Penalty_System {
         bool result;
         uint256 index;
         (result, index) = isWorkerInTask(msg.sender, _unique_taskid);
-
         require(result == true, "You are not assigned to this task..");
-        
-        // bytes32 dataId = keccak256(abi.encodePacked(dataHash, msg.sender, block.timestamp));
-        worker_data[_unique_taskid].data[index] = dataHash;
 
+        tw[_unique_taskid].data_index[index] = dataHash;
+ 
         emit DataSubmitted(msg.sender, dataHash);
     }
 
     function getDataHashForTask(uint256 _unique_taskid) public view returns (string[] memory){  
-        return worker_data[_unique_taskid].data;
+        return tw[_unique_taskid].data_index;
     }
 
 }
