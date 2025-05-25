@@ -50,18 +50,22 @@ contract Task_Selection is Reward_Penalty_System {
 
                     // Check if Worker is already in Task
                     bool result_inTask;
-
                     (result_inTask, ) = isWorkerInTask(ID_to_UserAddress, visiting_taskid);
-                    if(result_inTask) {
+
+                    //Check if user:
+                    //  - is the requester
+                    //  - is already a worker in this task
+                    //  - has already cancelled task before
+
+                    if((tasks[visiting_taskid].requester_address == ID_to_UserAddress) || result_inTask || is_Task_Cancelled_By_Worker(get_UserID, visiting_taskid)) {
                         continue;
                     }
-
 
                     //Will be checking the users array with certain parameters. 
                     //Will follow the concept of 'First Come First Served'
                     //In other words, the first who meet the requirements will be the first who
                     //will get the task.
-                    if ((users[get_UserID].limit_tasks != 0) && (compare_location(users[get_UserID].location, tasks[visiting_taskid].location)) && (tasks[visiting_taskid].requester_address != ID_to_UserAddress)) {
+                    if ((users[get_UserID].limit_tasks != 0) && (compare_location(users[get_UserID].location, tasks[visiting_taskid].location))) {
                         users[get_UserID].limit_tasks -= 1;
                         tasks[visiting_taskid].number_of_workers_limit -= 1;
                         //Checking for address(0) and proceed to overwrite if found in visiting_taskid
@@ -87,6 +91,16 @@ contract Task_Selection is Reward_Penalty_System {
                 }             
            }
         }
+    }
+
+    function is_Task_Cancelled_By_Worker(uint256 user_id, uint256 task_id) private view returns (bool) {
+        
+        for (uint256 k = 0; k < task_cancelled_worker[user_id].task_id.length; k++) {
+            if (task_cancelled_worker[user_id].task_id[k] == task_id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //If Requester, then only show the tasks they uploaded, along with the corresponding status and data, if submitted
@@ -185,6 +199,14 @@ contract Task_Selection is Reward_Penalty_System {
 
     }
 
+    struct Worker_Cancelled_Tasks {
+        uint256 user_id;
+        uint256[] task_id;
+    }
+    mapping(uint256 => Worker_Cancelled_Tasks) private task_cancelled_worker;
+
+    // uint256[] workers_with_cancelled_tasks;
+
     //Function for when a worker wants to cancel a task
     function Task_Cancelled_By_Worker(uint256 _unique_taskid) public {
         bool result;
@@ -193,15 +215,25 @@ contract Task_Selection is Reward_Penalty_System {
 
         require(result == true, "You are not assigned to this task..");
         uint256 get_UserID = userAddressToId[msg.sender];
+
+        task_cancelled_worker[get_UserID].user_id = get_UserID;
+        task_cancelled_worker[get_UserID].task_id.push(_unique_taskid);
+
         users[get_UserID].cancelled_tasks++;
         users[get_UserID].limit_tasks++;
         delete tw[_unique_taskid].assigned_addresses[index];
+
+        tasks[_unique_taskid].number_of_workers_limit++;
 
         if (tasks[_unique_taskid].status != TaskStatus.Available) {
            tasks[_unique_taskid].status = TaskStatus.Available;
         }
 
     }
+
+    // function is_Worker_In_Cancel(uint256 user_id) private returns (bool){
+    //     for (uint i = 0; i < task_cancelled_worker[user_id])
+    // }
 
     //Function to check if a Worker is assigned to a task
     function isWorkerInTask(address user_address, uint256 _unique_taskid) private view returns (bool, uint256){
