@@ -42,7 +42,7 @@ function validPointsArray(num1, num2, dataPoints) {
 }
 
 // Test:
-// const dataArray = [7, 10, 7.5, 8, 10.8, 11, 13, 12, 10.2, 15, 10.1];
+// const dataArray = [7, 10, 7.5, 8, 10.8, 11, 10.2, 10.1];
 
 // const result = findSmallestDifference(dataArray)
 // console.log(result.numbers[0], result.numbers[1])

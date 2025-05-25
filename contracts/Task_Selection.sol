@@ -33,7 +33,7 @@ contract Task_Selection is Reward_Penalty_System {
         return keccak256(abi.encodePacked(location_user)) == keccak256(abi.encodePacked(location_task));
     }
 
-     //Function for workers to be selected automatically for tasks [Available]
+     //Function for workers to be selected automatically for tasks
     function Select_Worker() public {
     
         //for loop for all tasks
@@ -239,7 +239,8 @@ contract Task_Selection is Reward_Penalty_System {
     function isWorkerInTask(address user_address, uint256 _unique_taskid) private view returns (bool, uint256){
         for (uint i = 0; i < getWorkerCount(_unique_taskid); i++) {
             if (tw[_unique_taskid].assigned_addresses[i] == user_address) {
-                return (true , i);
+                uint index = i;
+                return (true , index);
                 }
             }
         return (false, 0);

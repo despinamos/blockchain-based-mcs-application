@@ -1,4 +1,4 @@
-function dataValidation(dataArray, windowSize = 3, threshold = 0.5) {
+function dataValidation(dataArray, windowSize = 3, threshold = 1) {
   if (dataArray.length < windowSize) {
     return "Array of data must have at least as many values as the window size";
   }
@@ -41,11 +41,13 @@ function dataValidation(dataArray, windowSize = 3, threshold = 0.5) {
   };
 }
 
-const data = [11, 5, 5.5, 10, 4.9, -2, 5.25, 11, 3.5];
+// const data = [11, 5, 5.5, 10, 4.9, -2, 5.25, 11, 3.5];
 
-const result = dataValidation(data);
+// const result = dataValidation(data);
 
-console.log("Cluster center:", result.clusterCenter);
-console.log("Valid data:", result.validData);
-console.log("Worker indexes with valid data:", result.validIndexes);
-console.log("Worker indexes with invalid data:", result.nonValidIndexes);
+// console.log("Cluster center:", result.clusterCenter);
+// console.log("Valid data:", result.validData);
+// console.log("Worker indexes with valid data:", result.validIndexes);
+// console.log("Worker indexes with invalid data:", result.nonValidIndexes);
+
+module.exports = { dataValidation }
