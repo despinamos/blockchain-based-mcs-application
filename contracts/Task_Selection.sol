@@ -33,7 +33,7 @@ contract Task_Selection is Reward_Penalty_System {
         return keccak256(abi.encodePacked(location_user)) == keccak256(abi.encodePacked(location_task));
     }
 
-     //Function for workers to be selected automatically for tasks
+     //Function for workers to be selected automatically for tasks [Available]
     function Select_Worker() public {
     
         //for loop for all tasks
