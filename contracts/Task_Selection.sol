@@ -16,6 +16,7 @@ contract Task_Selection is Reward_Penalty_System {
             uint256 unique_taskid;
             address[] assigned_addresses;
             string[] data_index;
+            uint[] result;
     }
     mapping(uint256 => Task_has_Workers) private tw;
 
@@ -80,6 +81,7 @@ contract Task_Selection is Reward_Penalty_System {
                             tw[visiting_taskid].unique_taskid = visiting_taskid;
                             tw[visiting_taskid].assigned_addresses.push(ID_to_UserAddress);
                             tw[visiting_taskid].data_index.push("0");
+                            tw[visiting_taskid].result.push(4);
 
                         }
                     }
@@ -194,6 +196,7 @@ contract Task_Selection is Reward_Penalty_System {
                 users[get_UserID].limit_tasks++;
                 delete tw[_unique_taskid].assigned_addresses[i];
             }
+            Cancel_Penalty_Reputation(get_UserID);
         }
         tasks[_unique_taskid].status = TaskStatus.Cancelled; 
 
@@ -229,6 +232,7 @@ contract Task_Selection is Reward_Penalty_System {
            tasks[_unique_taskid].status = TaskStatus.Available;
         }
 
+        Cancel_Penalty_Reputation(get_UserID);
     }
 
     // function is_Worker_In_Cancel(uint256 user_id) private returns (bool){
@@ -278,4 +282,27 @@ contract Task_Selection is Reward_Penalty_System {
         return tw[_unique_taskid].data_index;
     }
 
+    //Result of Data Calculation Submitted by Requested
+    function Result_Set_by_Requester (uint256 _unique_taskid, uint256 index, uint256 _result) public {
+        //Set the appropriate character to display the result
+        //  0 - Penalty 1 - Reward  
+        require(tasks[_unique_taskid].requester_address == msg.sender, "You are not the creator of this task..");
+        require(_result == 1 || _result == 0, "Please enter a valid character. [0 - Failure , 1 - Success]");
+        tw[_unique_taskid].result[index] = _result;
+    }
+
+    //Calling for Reward or Penalty function after results were given. If not all results were provided, revert
+    function Result_after_Calculation (uint256 _unique_taskid) public {
+        require(tasks[_unique_taskid].requester_address == msg.sender, "You are not the creator of this task..");
+        for (uint index = 0; index < getWorkerCount(_unique_taskid); index++) {
+            uint256 get_UserID = userAddressToId[tw[_unique_taskid].assigned_addresses[index]];
+            if (tw[_unique_taskid].result[index] == 1) {
+                Reward_Process(get_UserID);
+            }else if(tw[_unique_taskid].result[index] == 0){
+                Penalty_Process(get_UserID);
+            }else{
+                revert("Worker's Results were not submitted. Please submit all results by calling the 'Result_Set_by_Requester() function");
+            }
+        } 
+    }
 }
