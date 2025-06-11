@@ -3,6 +3,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 contract UserInformation {
 
+    //Structured Data for User's Information
     struct User_Registration {
         uint256 u_id;
         string full_name;
@@ -15,21 +16,24 @@ contract UserInformation {
         bool is_Active;
     }
 
+    //User ID Counter
     uint256 public nextUserId = 1;
 
+    //Mappings for Struct and u_ids array
     mapping(uint256 => User_Registration) public users;
     uint256[] public u_ids;
     mapping(address => uint256) public userAddressToId;
 
     event User_Created(address user_address, string full_name, string location);
 
+    //Registers new User in Struct 
     function setUser_Information(string memory _full_name, string memory _location) public {        
         // Check if the user is already registered
         require(userAddressToId[msg.sender] == 0, "User already registered.");
 
         uint256 user_ID = nextUserId;
 
-        // Set user's information
+        // Sets user's information
         users[user_ID] = User_Registration({
             u_id: user_ID,
             user_address: msg.sender,
@@ -46,15 +50,18 @@ contract UserInformation {
         u_ids.push(user_ID);
         nextUserId++;
 
-        emit User_Created(msg.sender, _full_name, _location);  // Emit event
+        // Emits event with user's information
+        emit User_Created(msg.sender, _full_name, _location);  
     }
 
+    //Retrieves a User's Information based on their ID. Used for testing purposes.
     function getUserInformation(uint256 _u_id) public view returns (User_Registration memory) {
         require(_u_id != 0 && _u_id < nextUserId, "Invalid user ID");
         return users[_u_id];
     }
 
 
+    //Checks a User's reputations and updates the maximum number of tasks they can participate (limit_tasks)
     function Arrange_Limit(uint256 user_ID) internal returns (uint) {
         if (users[user_ID].reputation < 30) {
            users[user_ID].is_Active = false; // De-activate user if reputation is too low
@@ -70,6 +77,7 @@ contract UserInformation {
         return users[user_ID].limit_tasks;
     }
 
+    //Retrieves the contents of the array 'u_ids'. Used for testing purposes.
     function Get_u_ids() public view returns (uint256[] memory){
         return u_ids;
     }

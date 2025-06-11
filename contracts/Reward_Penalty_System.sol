@@ -3,45 +3,47 @@
 //@dev Despoina Moschokarfi 1516
 //@dev Eleni Maria Oikonomou 1529
 
-//Note: The is the last contract. It inherits both files, 'User_Related.sol' and 'Task_Related.sol'
-
-//Setting compiler version, ranging from 0.7.0 to 0.9.0
 pragma solidity >=0.7.0 <0.9.0;
 
-//We import the necessary data from the parent contracts which currently are in order : UserInformation, Task_Initialization and Task_Selection_Process
+//We import the necessary data from the parent contract: Task_Initialization.sol
 import './Task_Initialization.sol';
 
 contract Reward_Penalty_System is Task_Initialization{
 
+    //Created the function to demonstrate the logic of the reward system
     function Reward_Process(uint256 user_ID) public payable {
-        //Reward = 1 - Penalty = 0
-        // transfer tasks[_unique_taskid].reward to users[user_ID].user_address wallet
         (bool sent, ) = users[user_ID].user_address.call{value: msg.value}("");
         require(sent, "Failed to send Reward");
         Reputation_Score_Update( user_ID, 1, 0);
     }
 
-    //We tested the quality of the data and depending of how insufficient the data is, we give a greater the penalty
+    //Created the function to demonstrate the logic of the penalty system
     function Penalty_Process(uint256 user_ID) public {
-        //Here we take the given data and we check how below of the sufficient quality percentage they are. The lower they are, the higher the penalty percentage.
-        //pass
-        //Emit task ID has been cancelled ...And call function for Reputation
        Reputation_Score_Update(user_ID, 0, 1);
 
     }
     
-    //We also add to the reputation score
+    //Updating User's Resutation
     function Reputation_Score_Update(uint256 user_ID, uint256 reward, uint256 penalty) public {
-        //Conditions
-        if (reward > 0){
-            users[user_ID].completed_tasks++;
+        //Local Variable to Store New Reputation
+        uint256  rep;
+        //Check the results provided by function 'Result_after_Calculation' in Contract 'Task_Selection.sol'
+        if (reward == 1) {
+           users[user_ID].completed_tasks++;
+           rep = users[user_ID].reputation + 5;
+
+        }else if (penalty == 1){
+           rep = users[user_ID].reputation - 5;
         }
-        //Calculating the users's reputation by using the cancelled and completed requests
-            uint256  rep = users[user_ID].reputation + users[user_ID].completed_tasks * 10 + reward - penalty;
-            users[user_ID].reputation = rep;
-            Arrange_Limit(user_ID);
+
+        //Update User's reputation and check if limit of tasks changes.
+        users[user_ID].reputation = rep;
+        Arrange_Limit(user_ID);
     }
     
+    //Reduce User's Reputation as Penalty for:
+    // Worker - Cancelling their participation in a task
+    // Requester - Cancelling their task with at least one Worker participating in it.
     function Cancel_Penalty_Reputation(uint256 user_ID) public {
         uint256  rep = users[user_ID].reputation - 5;
         users[user_ID].reputation = rep;

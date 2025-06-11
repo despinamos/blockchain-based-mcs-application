@@ -1,5 +1,4 @@
 //SPDX-License-Identifier: Unlicense
-//Setting compiler version, ranging from 0.7.0 to 0.9.0
 pragma solidity >=0.7.0 < 0.9.0;
 
 //@dev Despoina Moschokarfi 1516
@@ -11,7 +10,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract Task_Selection is Reward_Penalty_System {
 
-    //Creating a struct that has the unique_id as its key value in the mapping
+    //A struct that has the unique_id as key value in the mapping
     struct Task_has_Workers{
             uint256 unique_taskid;
             address[] assigned_addresses;
@@ -19,22 +18,13 @@ contract Task_Selection is Reward_Penalty_System {
             uint[] result;
     }
     mapping(uint256 => Task_has_Workers) private tw;
-
-    //Created to test wether the data regarding the tasks are stored or not
-    //For testing purposes
-    function get_Task(uint256 u_task) private view returns(taskCreation memory task){
-        if (u_task < task_ids.length){
-           return tasks[u_task];
-        } else{
-            revert("The task does not exist...");
-        }
-    }
     
+    //Compares location provided by candidate Worker and current Task.
     function compare_location(string memory location_user, string memory location_task) private pure returns(bool){
         return keccak256(abi.encodePacked(location_user)) == keccak256(abi.encodePacked(location_task));
     }
 
-     //Function for workers to be selected automatically for tasks
+    //Function that automatically selects workers for each available task
     function Select_Worker() public {
     
         //for loop for all tasks
@@ -62,13 +52,11 @@ contract Task_Selection is Reward_Penalty_System {
                         continue;
                     }
 
-                    //Will be checking the users array with certain parameters. 
-                    //Will follow the concept of 'First Come First Served'
-                    //In other words, the first who meet the requirements will be the first who
-                    //will get the task.
+                    //Will be checking the users' array with certain parameters and follow the concept of 'First Come First Served'
                     if ((users[get_UserID].limit_tasks != 0) && (compare_location(users[get_UserID].location, tasks[visiting_taskid].location))) {
                         users[get_UserID].limit_tasks -= 1;
                         tasks[visiting_taskid].number_of_workers_limit -= 1;
+
                         //Checking for address(0) and proceed to overwrite if found in visiting_taskid
                         bool cancelled_index;
                         uint index;
@@ -95,8 +83,8 @@ contract Task_Selection is Reward_Penalty_System {
         }
     }
 
+    //Checks if Worker has been in current Task before
     function is_Task_Cancelled_By_Worker(uint256 user_id, uint256 task_id) private view returns (bool) {
-        
         for (uint256 k = 0; k < task_cancelled_worker[user_id].task_id.length; k++) {
             if (task_cancelled_worker[user_id].task_id[k] == task_id) {
                 return true;
@@ -107,9 +95,6 @@ contract Task_Selection is Reward_Penalty_System {
 
     //If Requester, then only show the tasks they uploaded, along with the corresponding status and data, if submitted
     function Table_Task_Requester() public view returns (string[] memory){
-        //Make a for loop to bring all tasks that the requester has created
-        //The ones that show first, are the tasks with submitted data from the worker's side.
-        //Afterwards, are the tasks that have yet to be completed. Shows also the number of workers that have taken the task.
         uint256 count = 0;
         for(uint256 i = 0; i < task_ids.length; i++) {
             uint256 visiting_taskid = task_ids[i];
@@ -138,7 +123,7 @@ contract Task_Selection is Reward_Penalty_System {
         return requesterTasks;
     }
     
-    //Function where worker is shown the tasks which he was assigned.
+    //Function where worker is shown the tasks in which he was assigned.
     function Table_Task_Worker() public view returns (string[] memory){
         uint256 count = 0;
         for (uint256 i = 0; i < task_ids.length; i++) {
@@ -181,7 +166,7 @@ contract Task_Selection is Reward_Penalty_System {
         return workerTasks;
     }
     
-    //Function for when a requester decides to not complete the task.
+    //Function for when a requester decides to cancel one of their task
     function Task_Cancelled_By_Requester(uint256 _unique_taskid) public {
         require(tasks[_unique_taskid].requester_address == msg.sender, "You are not the creator of this task..");
         uint256 get_UserID = userAddressToId[msg.sender];
@@ -202,13 +187,12 @@ contract Task_Selection is Reward_Penalty_System {
 
     }
 
+    //Struct that stores Workers and the tasks thay have cancelled
     struct Worker_Cancelled_Tasks {
         uint256 user_id;
         uint256[] task_id;
     }
     mapping(uint256 => Worker_Cancelled_Tasks) private task_cancelled_worker;
-
-    // uint256[] workers_with_cancelled_tasks;
 
     //Function for when a worker wants to cancel a task
     function Task_Cancelled_By_Worker(uint256 _unique_taskid) public {
@@ -235,9 +219,6 @@ contract Task_Selection is Reward_Penalty_System {
         Cancel_Penalty_Reputation(get_UserID);
     }
 
-    // function is_Worker_In_Cancel(uint256 user_id) private returns (bool){
-    //     for (uint i = 0; i < task_cancelled_worker[user_id])
-    // }
 
     //Function to check if a Worker is assigned to a task
     function isWorkerInTask(address user_address, uint256 _unique_taskid) private view returns (bool, uint256){
@@ -255,6 +236,7 @@ contract Task_Selection is Reward_Penalty_System {
         return tw[_unique_taskid].assigned_addresses.length; 
     }
 
+    //Retrieves the addresses of workers participating in a given Task (task_id)
     function getWorkersInTask(uint _unique_taskid) public view returns(address[] memory){
         return tw[_unique_taskid].assigned_addresses;
     }
@@ -263,10 +245,6 @@ contract Task_Selection is Reward_Penalty_System {
     event DataSubmitted(address indexed worker, string dataHash);
 
     //Function for a Worker to submit data for a task he is assigned to
-    //Using data_indexed to check if the corresponding slot matches the worker's index and overwrite it, if yes
-    //If no, revert()
-    //Then create a dataId hash that includes the data hash in the off-chain database,
-    //the worker address and the block timestamp and add it in the respective array spot
     function Submitting_Data (uint256 _unique_taskid, string memory dataHash) public{
         bool result;
         uint256 index;
@@ -278,6 +256,7 @@ contract Task_Selection is Reward_Penalty_System {
         emit DataSubmitted(msg.sender, dataHash);
     }
 
+    //Returns Cids sent from Workers
     function getDataHashForTask(uint256 _unique_taskid) public view returns (string[] memory){  
         return tw[_unique_taskid].data_index;
     }
