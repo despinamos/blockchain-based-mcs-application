@@ -258,6 +258,7 @@ contract Task_Selection is Reward_Penalty_System {
 
     //Returns Cids sent from Workers
     function getDataHashForTask(uint256 _unique_taskid) public view returns (string[] memory){  
+        require( msg.sender == tasks[_unique_taskid].requester_address, "You are not the creator of this task..");
         return tw[_unique_taskid].data_index;
     }
 
