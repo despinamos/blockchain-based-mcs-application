@@ -1,7 +1,6 @@
 import { PinataSDK } from "pinata";
 import 'dotenv/config';
-import { dataValidation } from "./data_quality/DataQuality_Updated.cjs";
-import * as fs from 'fs';
+import { dataValidation } from "./data_quality/dataQuality.cjs";
 
 const pinata = new PinataSDK({
   pinataJwt: process.env.PINATA_JWT,
@@ -12,7 +11,7 @@ const pinata = new PinataSDK({
 // // Workers will upload the file to IPFS, then take their cid and submit it to blockchain
 async function uploadFile() {
   try {
-    const file = new File([10.1], "data8.txt", { type: "text/plain" });
+    const file = new File([24], "workerData4.txt", { type: "text/plain" });
     const upload = await pinata.upload.public.file(file);
     console.log(upload);
   } catch (error) {
@@ -36,22 +35,16 @@ async function getFile(cid) {
   }
 }
 
-let dataHashes = ["bafkreidzajuzxzbmrkhen653iuaxezix5bvsfrlkdcpxmjng3jeqqgzeke", 
-  "bafkreickitobknscasua72aosa4ukxgbmcbidaqp4kze6hssgow6nly52u", 
-  "bafkreigejfo2ouevyzf7jycypzc5oqtpjfwkj7e744qrc4kqau3bz7qaie", 
-  "bafkreibmmjbdftosef3rffg7xmyqvsqabig7nlelm23jnwio6bx5563eum", 
-  "bafkreifvfnqd7hwinq4cvbedzlkppchs7etvgwtwvujyrsxnz326hq6icm", 
-  "bafkreicpzavsnlwli7jindco7prvqfzsupt4xtdmf35tebrmbalqubpoxa", 
-  "bafkreihy7thx3w4bkcf7qx6au7isvccdp27gj5f3frxi5qhfwf4sloiihm", 
-  "bafkreic22osxhbkacmofl6oh3f656zcebsejvnudv5zjjx5t2jky6eismm"]
+let dataHashes = ["bafkreidkhlofjw2rfd3zpvfbfbkrsm3tezqxcyr6nfbgc62vqeojdvwf2a", 
+  "bafkreicozfmz7qqd2f3kgaktnqxasgqzxscsownskw6wqgebbjbml7wrji", 
+  "bafkreia2cnqg43nnw6vbo2bfzusopajwvz5n4564bnyfptupkunrnqnh7u", 
+  "bafkreigcgvqgt2or46oksjbxqfj47o73jvcbnmpztva2ffal7w3gyuyz3m"]
 
 async function calculateDataQuality(dataHashes) {
 
   let dataArray = []
 
   for (let i = 0; i < dataHashes.length; i++) {
-    
-    console.log("DataHash", dataHashes[i]);
 
     // extract data from file
     let userFileObject = await getFile(dataHashes[i]);
